@@ -1,0 +1,86 @@
+---
+title: "Advanced spell helpers"
+description: "Timing, cast requests, charges, and ground-target helpers."
+---
+
+The regular [spell reference](/reference/spells) covers the common path. These helpers are useful when a package needs to account for latency, spell queues, channels, or ground-targeted abilities.
+
+## Timing and cast state
+
+```lua
+local gcd = spell:currentgcd()
+local queueWindow = spell:queuewindow()
+local latencyMs = spell:latency()
+local castTime = spell:getcasttime()
+local channelTime = spell:getchanneltime()
+```
+
+To inspect the player's current cast or channel:
+
+```lua
+local cast = warden.SpellHandler.GetCurrentCastInfo()
+if cast and cast.interruptible then
+  -- cast.kind is "cast" or "channel".
+  -- cast.spellID, cast.remains, and cast.percent are also available.
+end
+```
+
+`warden.StopCasting()` returns a success value and a reason:
+
+```lua
+local stopped, reason = warden.StopCasting()
+```
+
+## Charges and talents
+
+```lua
+local charges = spell:charges()
+local maximum = spell:maxcharges()
+local fractional = spell:chargesfractional()
+local nextCharge = spell:timetonextcharge()
+local allCharges = spell:timetofull()
+local talentRank = spell:rank()
+```
+
+`warden.SpellHandler.GetPointsInTalent(name)` is available when the package needs to look up a talent by name.
+
+## Cast requests
+
+`spell:cast(unit)` keeps its Boolean result for normal rotation code. The most recent structured request can be inspected when debugging or building a queue:
+
+```lua
+local request = spell:lastcastrequest()
+if request then
+  -- request.requestID, request.status, and request.reason
+end
+```
+
+Requests can also be retrieved with:
+
+```lua
+local request = warden.SpellHandler:GetCastRequest(requestID)
+```
+
+Statuses include `submitted`, `success`, `failed`, `interrupted`, and `rejected`.
+
+## Ground-targeted spells
+
+For a ground-targeted spell, `smartaoeposition` finds the best position using the active enemies and group units. `smartaoe` casts at that position:
+
+```lua
+local position = spells.GroundEffect:smartaoeposition(target, {
+  filter = function(unit)
+    return unit.enemy and unit.alive
+  end
+})
+
+if position then
+  spells.GroundEffect:smartaoe(target, {
+    filter = function(unit)
+      return unit.enemy and unit.alive
+    end
+  })
+end
+```
+
+Use `ignoreEnemies` or `ignoreFriends` when the spell should only consider one side. A position result contains `x`, `y`, `z`, and `hitCount`.

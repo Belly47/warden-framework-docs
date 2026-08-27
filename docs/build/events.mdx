@@ -1,0 +1,66 @@
+---
+title: "Events and callbacks"
+description: "Run lightweight code when game events happen or on a regular update."
+---
+
+Use events for state changes and callbacks for work that needs to run repeatedly. Keep handlers small; high-frequency events and update callbacks run alongside the rotation.
+
+## Game events
+
+`RegisterNormalEvent` receives the normal event arguments from the game:
+
+```lua
+local function onTargetChanged()
+  local target = warden.UnitManager:Get("target")
+  if target.exists and target.enemy then
+    -- Refresh target-specific state.
+  end
+end
+
+warden.EventHandler:RegisterNormalEvent("PLAYER_TARGET_CHANGED", onTargetChanged)
+```
+
+Remove a handler when the package no longer needs it:
+
+```lua
+warden.EventHandler:UnregisterNormalEvent("PLAYER_TARGET_CHANGED", onTargetChanged)
+```
+
+## Combat-log events
+
+`RegisterEvent` receives a structured event object. The event name is in `eventData.event`; source and destination units are in `eventData.source` and `eventData.dest`; spell-specific values are in `eventData.params`.
+
+```lua
+warden.EventHandler:RegisterEvent("SPELL_CAST_SUCCESS", function(eventData)
+  local player = warden.UnitManager:Get("player")
+  if eventData.source and eventData.source.guid == player.guid then
+    local spellID = eventData.params[1]
+    -- Record or react to the player's cast.
+  end
+end)
+```
+
+Use a filter when only some events should reach the handler:
+
+```lua
+warden.EventHandler:AddFilter("SPELL_CAST_SUCCESS", function(eventData)
+  local player = warden.UnitManager:Get("player")
+  return eventData.source and eventData.source.guid == player.guid
+end)
+```
+
+Common combat-log events include `SPELL_CAST_START`, `SPELL_CAST_SUCCESS`, `SPELL_AURA_APPLIED`, `SPELL_AURA_REMOVED`, `SPELL_INTERRUPT`, and `SPELL_DISPEL`.
+
+## Update and tick callbacks
+
+Use `OnUpdate` for work tied to frame updates and `OnTick` for routine-style work. Store the returned callback ID if the callback needs to be removed later:
+
+```lua
+local callbackID = warden:OnUpdate(function(elapsed)
+  -- Keep this light. `elapsed` is the time since the previous update.
+end, true)
+
+warden:RemoveCallback(callbackID, true)
+```
+
+Pass `false` to register a callback disabled, then enable it through the callback state when the package needs it. Avoid doing full enemy scans or printing to chat every frame.

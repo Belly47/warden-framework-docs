@@ -1,0 +1,84 @@
+---
+title: "Events, items, drawing, and tools"
+description: "Optional helpers for package feedback, utility actions, and diagnostics."
+---
+
+## Items
+
+Create an item through the item handler, then use the same ready/use pattern as spells:
+
+```lua
+local item = warden.ItemHandler.NewItem(12345)
+
+if item and item:usable() then
+  item:use()
+end
+```
+
+Items also expose `equipped`, `isknown`, `cooldown`, `isusable`, `count`, `getcharges`, `currentGCD`, `ready`, `waslastused`, `callback`, and `execute`.
+
+## Drawing
+
+Drawing is optional presentation. Packages should still work when drawing is disabled.
+
+```lua
+warden.Draw:RegisterCallback("enemyMarkers", function(canvas, unit)
+  if not unit.enemy or not unit.alive then return end
+
+  local r, g, b, a = warden.Draw:GetColor("Red", 70)
+  canvas:SetColor(r, g, b, a)
+  canvas:Circle(unit.position.x, unit.position.y, unit.position.z, 1)
+end, "units")
+```
+
+Remove it by name when the feature is disabled:
+
+```lua
+warden.Draw:UnregisterCallback("enemyMarkers")
+```
+
+The draw canvas supports text, lines, circles, rectangles, arcs, cubes, and textures. The draw module also provides world-to-screen and coordinate conversion helpers.
+
+## Macro commands
+
+Packages can register a small command surface through `warden.Macro`:
+
+```lua
+warden.Macro:RegisterCommand("status", function()
+  local target = warden.UnitManager:Get("target")
+  print("Target exists: " .. tostring(target.exists))
+end, "Show target status")
+```
+
+Use `UnregisterCommand` when removing a command. Keep commands focused and handle missing arguments without throwing errors.
+
+## Toasts and alerts
+
+```lua
+warden.alert("Interrupt ready", 6552)
+warden.Toast:Show("Warden", "Rotation loaded")
+```
+
+Use alerts for short, important feedback and toasts for less urgent messages. Avoid printing every tick.
+
+## Missiles
+
+Missile objects expose their `creator`, `target`, and `source`, along with position fields:
+
+```lua
+for _, missile in ipairs(warden.missiles._list) do
+  local source = missile.source
+  local target = missile.target
+  local position = missile.currentposition
+end
+```
+
+`warden.missiles` is a Warden `List`; prefer its `each` method in package code:
+
+```lua
+warden.missiles:each(function(missile)
+  if missile.target and missile.currentposition then
+    -- React to the missile.
+  end
+end)
+```

@@ -17,7 +17,7 @@ end
 `warden.List` provides small collection helpers for unit collections. Use `each`, `first`, `filter`, and `count` instead of mutating a list while iterating it.
 
 ```lua
-local lowest = warden.activefriends:first(function(unit)
+local lowest = warden.fgroup:first(function(unit)
   return unit.healthpercent < 50
 end)
 ```

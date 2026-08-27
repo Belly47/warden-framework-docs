@@ -16,7 +16,7 @@
       },
       {
         "group": "Build a rotation",
-        "pages": ["build/anatomy", "build/spells-and-callbacks", "build/priority-lists", "build/gui-and-settings", "build/optional-abilities"]
+        "pages": ["build/anatomy", "build/spells-and-callbacks", "build/priority-lists", "build/gui-and-settings", "build/optional-abilities", "build/events"]
       },
       {
         "group": "Core concepts",
@@ -28,7 +28,7 @@
       },
       {
         "group": "Reference",
-        "pages": ["reference/routines", "reference/spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/helpers-and-enums"]
+        "pages": ["reference/routines", "reference/spells", "reference/advanced-spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/helpers-and-enums", "reference/events-and-tools"]
       },
       {
         "group": "Examples and support",
