@@ -9,4 +9,4 @@ Use alerts for visible, short-lived player feedback:
 warden.alert("Interrupt ready", 6552)
 ```
 
-Use `warden.Toast:Show(title, message)` for less urgent messages. Drawing APIs are optional presentation helpers; every rotation must continue functioning when drawing is disabled. Avoid per-tick chat output—surface actionable failures through the framework error path instead.
+Drawing APIs are optional presentation helpers; every rotation must continue functioning when drawing is disabled. Avoid per-tick chat output—surface actionable failures through the framework error path instead.

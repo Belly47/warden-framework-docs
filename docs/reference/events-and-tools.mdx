@@ -52,14 +52,13 @@ end, "Show target status")
 
 Use `UnregisterCommand` when removing a command. Keep commands focused and handle missing arguments without throwing errors.
 
-## Toasts and alerts
+## Alerts
 
 ```lua
 warden.alert("Interrupt ready", 6552)
-warden.Toast:Show("Warden", "Rotation loaded")
 ```
 
-Use alerts for short, important feedback and toasts for less urgent messages. Avoid printing every tick.
+Use alerts for short, important feedback. Avoid printing every tick.
 
 ## Missiles
 
