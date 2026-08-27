@@ -1,0 +1,130 @@
+---
+title: "Tank busters and raid settings"
+description: "Use Warden's incoming-damage helpers and optional raid taunt-swap data."
+---
+
+Warden provides two separate systems. Neither system casts an ability automatically; a rotation must consume the relevant helper or data table.
+
+| System | Intended users | Purpose |
+| --- | --- | --- |
+| Tank-buster calculator | Tanks | Predict dangerous casts and debuffs, then decide when a personal defensive is needed. |
+| DPS/healer buster calculator | DPS and healers | Detect dangerous incoming damage for non-tank defensive logic. |
+| Raid taunt settings | Tanks in raids | Define which boss debuffs should trigger a taunt swap and at how many stacks. |
+
+## Tank-buster defensives
+
+The framework-owned encounter data is exposed through `warden.tank_busters`. It contains physical casts, magical casts, debuffs, expected damage, and an optional damage multiplier. `warden.shouldUseDefensives()` evaluates that data against the player and returns:
+
+```lua
+local shouldUse, damageTypes, healthAfterHit = warden.shouldUseDefensives()
+```
+
+- `shouldUse` is `true` when the predicted hit crosses the configured health threshold.
+- `damageTypes` can contain `physical`, `magic`, `debuff`, and `AOE` flags.
+- `healthAfterHit` is the predicted post-hit health fraction when one was calculated.
+
+Register the framework controls on a tank rotation's defensive settings tab:
+
+```lua
+local gui = warden.GuiBuilder:New()
+local category = gui:Category("Guardian Druid")
+local defensives = category:Tab("Defensives")
+
+warden.TankBusterGUI(defensives)
+```
+
+Then consume the decision inside each appropriate defensive callback:
+
+```lua
+spells.Barkskin:callback(function(spell)
+  if not warden.Rotation.Defensives:GetValue() then
+    return false
+  end
+
+  local shouldUse, damageTypes = warden.shouldUseDefensives()
+  if shouldUse and spell:castable(player) then
+    return spell:cast(player)
+  end
+end)
+```
+
+The tank controls use these shared configuration keys:
+
+| Key | Meaning | Default |
+| --- | --- | --- |
+| `defs_tank_buster` | Enable tank-buster decisions. | `true` |
+| `defs_t_buster_s_health` | Predicted-health threshold for dangerous casts. | `35` |
+| `defs_t_buster_b_health` | Current-health threshold for listed dangerous debuffs. | `45` |
+
+The equivalent non-tank API is `warden.DPSOrHealersBusterGUI(tab)` with `warden.shouldDPSUseDefensives()`. It uses `warden.dps_healer_busters`, `defs_dps_heal_buster`, `defs_buster_s_health`, and `defs_buster_b_health`.
+
+<Note>
+Encounter damage changes between seasons. Keep the cast/debuff lists and their expected damage values current instead of treating the calculator as permanent encounter data.
+</Note>
+
+## Raid taunt swaps
+
+`warden.raidspells` is a framework-owned map keyed by boss debuff spell ID:
+
+```lua
+warden.raidspells[debuffSpellID] = {
+  toggle = true,
+  stack = 6
+}
+```
+
+The built-in entries and defaults are:
+
+| Debuff spell ID | Configuration key | Default stacks |
+| --- | --- | ---: |
+| `1284110` | `raid_hollowing_strikes` | 6 |
+| `1284487` | `raid_bloodvenom_injection` | 1 |
+| `1280935` | `raid_dripping_fangs` | 1 |
+| `1295854` | `raid_shredding_shards` | 1 |
+| `1277002` | `raid_ravage` | 1 |
+| `1289192` | `raid_caustic_deluge` | 1 |
+| `1288538` | `raid_stone_breaker` | 1 |
+
+A tank rotation can consume the table in its raid-only taunt callback:
+
+```lua
+local function ShouldRaidTaunt()
+  if not IsInRaid() then
+    return false
+  end
+
+  local tauntUnit = warden.UnitManager:Get("taunt_unit")
+  local offTank = warden.UnitManager:Get("off_tank")
+  if not tauntUnit.exists or not tauntUnit.isboss or not tauntUnit.los or not offTank.exists then
+    return false
+  end
+
+  for auraID, options in pairs(warden.raidspells or {}) do
+    if options.toggle
+      and offTank.aura(auraID)
+      and offTank.auracount(auraID) >= options.stack then
+      return true
+    end
+  end
+
+  return false
+end
+
+spells.Growl:callback(function(spell, logic)
+  if logic == "raid" and ShouldRaidTaunt() then
+    return spell:cast(warden.UnitManager:Get("taunt_unit"))
+  end
+end)
+```
+
+Keep a separate user-facing master taunt toggle in the tank package. The shared table describes encounter thresholds; it should not override the user's decision to disable automatic taunting.
+
+### Current UI status
+
+The framework still registers the configuration defaults and builds `warden.raidspells`, but the **Shared Settings → Raid** page is currently hidden because current Warden tank packages do not consume it. This keeps the API available without showing nonfunctional controls on every class.
+
+To restore the page later, set `SHOW_SHARED_RAID_SETTINGS` to `true` in `core.lua` and reload the framework. When enabled, the page is registered only for tank specializations.
+
+<Warning>
+Hiding the page does not disable the API. Any package that consumes `warden.raidspells` will still receive the saved values or defaults.
+</Warning>

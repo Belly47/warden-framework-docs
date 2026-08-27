@@ -28,7 +28,7 @@
       },
       {
         "group": "Reference",
-        "pages": ["reference/routines", "reference/spells", "reference/advanced-spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/helpers-and-enums", "reference/events-and-tools"]
+        "pages": ["reference/routines", "reference/spells", "reference/advanced-spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/tank-busters-and-raid-settings", "reference/helpers-and-enums", "reference/events-and-tools"]
       },
       {
         "group": "Examples and support",
