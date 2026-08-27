@@ -11,7 +11,7 @@ Each loaded Lua file receives:
 local WGG, warden = ...
 ```
 
-`warden` is the framework API. `WGG` is the host API; use it only where a documented Warden feature requires it. Do not depend on launcher globals or the legacy compatibility aliases.
+`warden` is the framework API. `WGG` is the host API; use it only where a documented Warden feature requires it. Do not depend on launcher globals.
 
 <Warning>
 Do not add framework files to your rotation package. A rotation package should contain only its manifest and its own Lua files.

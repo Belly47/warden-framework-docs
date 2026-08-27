@@ -28,7 +28,7 @@
       },
       {
         "group": "Examples and support",
-        "pages": ["examples/basic-rotation", "examples/multiple-routines", "troubleshooting/common-problems", "compatibility/legacy-migration"]
+        "pages": ["examples/basic-rotation", "examples/multiple-routines", "troubleshooting/common-problems"]
       }
     ]
   }
