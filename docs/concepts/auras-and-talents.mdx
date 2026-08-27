@@ -1,0 +1,24 @@
+---
+title: "Auras and talents"
+description: "Use aura objects and talent checks without hard-coding stale state."
+---
+
+Aura data is represented by `warden.Aura`. An aura object exposes its remaining duration through `:remains()`.
+
+```lua
+local aura = target.aura and target.aura(12345, player)
+if aura and aura:remains() < 4 then
+  spells.RefreshDebuff:execute()
+end
+```
+
+For a named talent lookup use the Spell Handler:
+
+```lua
+local points = warden.SpellHandler.GetPointsInTalent("Example Talent")
+if points > 0 and spells.TalentAbility then
+  spells.TalentAbility:execute()
+end
+```
+
+Keep a talent-only spell optional. A talent being disabled must not prevent core registration.

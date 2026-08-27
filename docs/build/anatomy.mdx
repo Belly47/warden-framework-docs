@@ -1,0 +1,14 @@
+---
+title: "Rotation anatomy"
+description: "Keep a rotation package small, ordered, and testable."
+---
+
+Every package has three responsibilities:
+
+| File | Responsibility |
+| --- | --- |
+| `spells.lua` | Create and populate spell objects. |
+| `gui.lua` | Define category controls and persisted options. |
+| `rotation.lua` | Read the spellbook, organize priority helpers, and register one routine. |
+
+Keep references local to each file. Shared state belongs in your package namespace, not in `_G`. A routine callback should return after a successful action so lower-priority actions do not run in the same tick.

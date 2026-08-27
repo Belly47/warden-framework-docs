@@ -1,0 +1,31 @@
+---
+title: "Configuration and UI"
+description: "Persist settings and build framework-owned settings pages."
+---
+
+## `warden.Config`
+
+```lua
+warden.Config:Read(key, default)
+warden.Config:Write(key, value)
+warden.Config:SetDefault(key, value)
+warden.Config:GetAll()
+warden.Config:ClearCache()
+```
+
+Use `SetDefault` while defining a control and `Read` during routine execution. Keys are package-owned strings; prefix them with your namespace.
+
+## `warden.GuiBuilder`
+
+```lua
+local gui = warden.GuiBuilder:New()
+local category = gui:Category("Package name", 100)
+local tab = category:Tab("General")
+tab:Checkbox({ text = "Enable", key = "package.enabled", default = true })
+```
+
+Supported stable elements are `Button`, `Checkbox`, `EditBox`, `Header`, `Slider`, `DoubleSlider`, `Dropdown`, `ColorPicker`, `HalfLabel`, and `Spacer`. Each accepts one configuration table; see the [GUI guide](/build/gui-and-settings) for the recommended shape.
+
+## `warden:AddGlobalToggle`
+
+Creates a framework status-frame control. Prefer a regular GUI control for package-specific tuning.

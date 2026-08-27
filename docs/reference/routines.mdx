@@ -1,0 +1,34 @@
+---
+title: "Routines"
+description: "Stable APIs for registering and selecting rotation routines."
+---
+
+## `warden:RegisterRoutine`
+
+```lua
+warden:RegisterRoutine(routineFunc, class, spec, namespace)
+```
+
+Registers one selectable routine. `class` is uppercase, `spec` is the in-game specialization index, and `namespace` must match the spellbook namespace.
+
+```lua
+warden:RegisterRoutine(CombatTick, "WARRIOR", 1, "Warden Basic")
+```
+
+Registration refreshes the routine selector. Register once during file load, never every tick.
+
+## `warden:LoadRoutine`
+
+```lua
+warden:LoadRoutine(class, spec, namespace)
+```
+
+Sets the active registered routine. Normal packages do not need to call this: the framework selects the user’s choice automatically.
+
+## `warden:NotifyRoutinesChanged`
+
+```lua
+warden:NotifyRoutinesChanged()
+```
+
+Refreshes the selector after a package changes the registry dynamically. `RegisterRoutine` already calls it.

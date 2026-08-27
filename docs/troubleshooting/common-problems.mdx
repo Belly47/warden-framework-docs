@@ -1,0 +1,20 @@
+---
+title: "Common problems"
+description: "Diagnose the errors rotation authors see most often."
+---
+
+## No routines available
+
+Confirm the package files loaded, the class is uppercase in `RegisterRoutine`, the spec is the current specialization index, and the namespace matches exactly.
+
+## A routine appears but does nothing
+
+Check the priority list calls `:execute()`, the target condition is valid, and every successful cast returns before lower-priority actions run.
+
+## A local package fails during load
+
+Read the file path in the Warden failure message. The common causes are a missing manifest entry, a wrong order, and a callback invoked on an optional spell that is `nil`.
+
+## A setting does not persist
+
+Use a stable string key, declare its default with the builder, and read the same key through `warden.Config:Read`.

@@ -1,0 +1,30 @@
+---
+title: "Your first routine"
+description: "Create a minimal selectable routine."
+---
+
+Use the complete [basic package](/examples/basic-rotation) as the source of truth. The three essential steps are:
+
+```lua
+-- spells.lua
+local WGG, warden = ...
+local spells = {
+  Strike = warden.SpellHandler.NewSpell(6603)
+}
+warden.SpellHandler.PopulateSpellbook(spells, "WARRIOR", 1, "Warden Basic Arms")
+```
+
+```lua
+-- rotation.lua
+local WGG, warden = ...
+local spells = warden.SpellHandler.Spellbooks.warrior["1"]["Warden Basic Arms"]
+
+warden:RegisterRoutine(function()
+  local target = warden.UnitManager:Get("target")
+  if target and target.enemy then
+    spells.Strike:execute()
+  end
+end, "WARRIOR", 1, "Warden Basic Arms")
+```
+
+The Active Routine selector displays `Warden Basic Arms` when the player is a Warrior in specialization 1.

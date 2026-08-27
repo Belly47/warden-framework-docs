@@ -1,0 +1,20 @@
+---
+title: "Basic rotation package"
+description: "A complete three-file package you can copy and adapt."
+---
+
+The checked source lives beside this page in [`examples/basic-rotation`](./basic-rotation). Copy the folder below your local `wardenrotations` directory and add its three entries to the root manifest.
+
+```json
+[
+  "examples/basic-rotation/warrior/arms/spells",
+  "examples/basic-rotation/warrior/arms/gui",
+  "examples/basic-rotation/warrior/arms/rotation"
+]
+```
+
+It demonstrates a spellbook, a persisted setting, a callback, a priority list, and one registered routine. Replace the Warrior IDs and namespace together when adapting it to another specialization.
+
+<Warning>
+This is an authoring example, not a recommended gameplay rotation. Build your own gameplay logic and test it on a safe target.
+</Warning>

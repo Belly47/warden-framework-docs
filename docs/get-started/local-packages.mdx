@@ -1,0 +1,29 @@
+---
+title: "Local packages and load order"
+description: "Put a rotation package where Warden discovers it and control its execution order."
+---
+
+The launcher searches local rotations first. Put packages in the launcher script location under `wardenrotations`; its final fallback is `C:/WGG/wardenrotations`.
+
+Use this structure:
+
+```text
+wardenrotations/
+  loadorder.json
+  warrior/arms/basic/
+    spells.lua
+    gui.lua
+    rotation.lua
+```
+
+The root manifest lists files without the `.lua` extension and preserves order:
+
+```json
+[
+  "warrior/arms/basic/spells",
+  "warrior/arms/basic/gui",
+  "warrior/arms/basic/rotation"
+]
+```
+
+Load spells before code that reads them, then build UI, then register the routine. A manifest entry that does not exist is a load error with its exact path.

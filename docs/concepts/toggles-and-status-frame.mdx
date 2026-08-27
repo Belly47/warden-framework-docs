@@ -1,0 +1,21 @@
+---
+title: "Toggles and status frame"
+description: "Add visible user controls for rotation behavior."
+---
+
+Global toggles add a persistent status-frame button and expose the resulting state through `warden.Rotation`.
+
+```lua
+warden.Rotation.Cooldown = warden:AddGlobalToggle({
+  label = "Cooldown:",
+  var = "wardenBasicCooldown",
+  icon = 318,
+  value = true
+})
+
+if warden.Rotation.Cooldown.value then
+  spells.Cooldown:execute()
+end
+```
+
+Use one clear toggle per meaningful behavior. Package-specific numeric or checkbox settings belong in `GuiBuilder` and `Config`; do not add a toggle just to mirror a settings checkbox.

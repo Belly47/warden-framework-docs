@@ -1,0 +1,25 @@
+---
+title: "Units and lists"
+description: "Read unit state and work through groups of units safely."
+---
+
+Get canonical units from the Unit Manager:
+
+```lua
+local player = warden.UnitManager:Get("player")
+local target = warden.UnitManager:Get("target")
+
+if target and target.enemy and target.healthpercent < 20 then
+  -- execute-range logic
+end
+```
+
+`warden.List` provides small collection helpers for unit collections. Use `each`, `first`, `filter`, and `count` instead of mutating a list while iterating it.
+
+```lua
+local lowest = warden.activefriends:first(function(unit)
+  return unit.healthpercent < 50
+end)
+```
+
+Unit properties depend on the current game state. Treat values as temporary snapshots and re-read them on the next routine tick.

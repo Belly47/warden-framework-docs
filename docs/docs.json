@@ -1,0 +1,35 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Warden Framework v2",
+  "description": "Source-verified documentation for building Warden rotation packages.",
+  "theme": "mint",
+  "colors": {
+    "primary": "#499AEB",
+    "light": "#67B5FF",
+    "dark": "#173E68"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get started",
+        "pages": ["index", "get-started/prerequisites", "get-started/local-packages", "get-started/first-routine", "get-started/debugging"]
+      },
+      {
+        "group": "Build a rotation",
+        "pages": ["build/anatomy", "build/spells-and-callbacks", "build/priority-lists", "build/gui-and-settings", "build/optional-abilities"]
+      },
+      {
+        "group": "Core concepts",
+        "pages": ["concepts/units-and-lists", "concepts/auras-and-talents", "concepts/toggles-and-status-frame", "concepts/events-alerts-and-draw"]
+      },
+      {
+        "group": "Reference",
+        "pages": ["reference/routines", "reference/spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/helpers-and-enums"]
+      },
+      {
+        "group": "Examples and support",
+        "pages": ["examples/basic-rotation", "examples/multiple-routines", "troubleshooting/common-problems", "compatibility/legacy-migration"]
+      }
+    ]
+  }
+}

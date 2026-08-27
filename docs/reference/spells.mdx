@@ -1,0 +1,49 @@
+---
+title: "Spells"
+description: "Stable Spell Handler and Spell object APIs."
+---
+
+## Creation and registration
+
+```lua
+local spell = warden.SpellHandler.NewSpell(spellID, payload)
+warden.SpellHandler.PopulateSpellbook(spells, class, spec, namespace)
+```
+
+`NewSpell` returns `nil` when it cannot initialize the spell. Treat it as required or optional deliberately. `PopulateSpellbook` stores the supplied table under lowercase class, string spec, and namespace.
+
+## Callback and execution
+
+```lua
+spell:callback(function(spell) ... end)
+spell:execute(...)
+```
+
+`callback` stores one callback. `execute` runs it and returns the callback result.
+
+## Readiness and casting
+
+```lua
+spell:ready()
+spell:castable(unit)
+spell:cast(unit)
+spell:inrange(unit)
+spell:getcd()
+spell:charges()
+spell:maxcharges()
+spell:chargesfractional()
+```
+
+Use `castable` before `cast` when your callback has nontrivial conditions. All values are current-tick state; do not cache them across ticks.
+
+## Other supported helpers
+
+`getcasttime`, `getchanneltime`, `timetofull`, `timetocharges`, `timetonextcharge`, `overlayed`, `waslastcast`, `rank`, `count`, `castcursor`, `smartaoe`, and `smartaoeposition` are source-verified. Use them only when the associated spell object exists.
+
+## Talent points
+
+```lua
+local points = warden.SpellHandler.GetPointsInTalent("Talent name")
+```
+
+Returns the known point count for the named talent.

@@ -1,0 +1,15 @@
+---
+title: "Priority lists"
+description: "Make action order explicit and stop after an action succeeds."
+---
+
+```lua
+local function Combat(spells)
+  if spells.Cooldown:execute() then return true end
+  if spells.Maintenance:execute() then return true end
+  if spells.Primary:execute() then return true end
+  return false
+end
+```
+
+Run defensive, interrupt, and out-of-combat helpers before or beside your damage list only when their conditions are independent. Do not call `execute` on an optional spell without checking that its spell object exists.

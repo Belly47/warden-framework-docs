@@ -1,0 +1,25 @@
+---
+title: "Warden Framework v2"
+description: "Build reliable, local-first Warden rotation packages."
+---
+
+<Note>
+These docs teach the supported Warden authoring surface. Framework internals, launcher transport, marketplace access, and authentication are intentionally out of scope.
+</Note>
+
+## Start here
+
+1. Set up a local `wardenrotations` package.
+2. Create a spellbook, UI settings, and one routine in that order.
+3. Register the routine with `warden:RegisterRoutine`.
+
+The [first routine](/get-started/first-routine) guide produces a small, copyable package. The [reference](/reference/routines) explains every stable API used by rotation authors.
+
+## What Warden provides
+
+- A selectable routine registry and pause control.
+- Spell objects with callbacks and execution helpers.
+- Unit, aura, list, configuration, UI, alert, and status-frame helpers.
+- A WGG host object passed into each loaded file when a host capability is required.
+
+Write new packages against `warden`. The compatibility layer exists for older packages only and is documented separately in [Legacy migration](/compatibility/legacy-migration).

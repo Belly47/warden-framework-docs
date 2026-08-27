@@ -1,0 +1,18 @@
+---
+title: "Helpers and enums"
+description: "Stable Warden helpers for common rotation work."
+---
+
+| API | Use |
+| --- | --- |
+| `warden.alert(input, iconID, payload)` | Show an in-game alert. |
+| `warden.texture(idOrPath, size)` | Produce formatted spell/texture text for UI labels. |
+| `warden.gcd()` | Get the current global cooldown value. |
+| `warden.groupttd()` | Get the average valid enemy time-to-die value. |
+| `warden.grouphp(distance)` | Read group-health information within a range. |
+| `warden.grouphpcount(distance, percent)` | Count group members at or above a health threshold. |
+| `warden.random(min, max)` | Get a random integer in the given range. |
+| `warden.blockmovement(timewindow)` | Temporarily block movement behavior. |
+| `warden.CanApplyCc(unit, category, minMult)` | Check diminishing-return eligibility for `incap`, `disorient`, or `stun`. |
+
+`warden.Enums` and `warden.Lists` provide framework-maintained reference data. Treat enum tables as read-only. The exact available categories are versioned with the framework and should be feature-checked before use.

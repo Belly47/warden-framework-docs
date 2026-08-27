@@ -1,0 +1,12 @@
+---
+title: "Events, alerts, and drawing"
+description: "Give users feedback without turning routine code into a debug console."
+---
+
+Use alerts for visible, short-lived player feedback:
+
+```lua
+warden.alert("Interrupt ready", 6552)
+```
+
+Use `warden.Toast:Show(title, message)` for less urgent messages. Drawing APIs are optional presentation helpers; every rotation must continue functioning when drawing is disabled. Avoid per-tick chat output—surface actionable failures through the framework error path instead.

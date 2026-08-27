@@ -1,0 +1,23 @@
+---
+title: "Debugging"
+description: "Find loading, registration, and runtime problems quickly."
+---
+
+Check these in order:
+
+1. Confirm every `loadorder.json` entry resolves to a `.lua` file.
+2. Ensure `spells.lua` loads before `gui.lua` and `rotation.lua`.
+3. Match the spellbook and `RegisterRoutine` class, spec, and namespace exactly.
+4. Check the Warden error message: framework and local failures include the responsible file path.
+
+Use one guarded optional spell pattern. Do not bind a callback to an absent talent:
+
+```lua
+if spells.OptionalAbility then
+  spells.OptionalAbility:callback(function(spell)
+    return spell:castable() and spell:cast()
+  end)
+end
+```
+
+Missing core abilities are different: report the required ability and stop registering that package rather than creating a partially functional routine.

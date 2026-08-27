@@ -1,0 +1,19 @@
+---
+title: "Legacy migration"
+description: "Move an older LR or Aurora package to the supported Warden authoring style."
+---
+
+New code must use `warden` as its framework namespace and receive its environment explicitly:
+
+```lua
+local WGG, warden = ...
+```
+
+| Legacy pattern | Warden pattern |
+| --- | --- |
+| `LR:RegisterRoutine(...)` | `warden:RegisterRoutine(...)` |
+| legacy spell factory | `warden.SpellHandler.NewSpell(...)` |
+| global configuration table | `warden.Config:Read(...)` / `Write(...)` |
+| ad-hoc UI frame | `warden.GuiBuilder` |
+
+Do not copy compatibility aliases, launcher prelude code, authentication code, or raw storage requests into a rotation package. The framework keeps compatibility only so existing packages can migrate safely.

@@ -1,0 +1,24 @@
+---
+title: "Spells and callbacks"
+description: "Create spell objects once and put their logic behind callbacks."
+---
+
+```lua
+local WGG, warden = ...
+
+local spells = {
+  Execute = warden.SpellHandler.NewSpell(163201),
+  MortalStrike = warden.SpellHandler.NewSpell(12294)
+}
+
+spells.Execute:callback(function(spell)
+  local target = warden.UnitManager:Get("target")
+  if target and target.enemy and spell:castable(target) then
+    return spell:cast(target)
+  end
+end)
+
+warden.SpellHandler.PopulateSpellbook(spells, "WARRIOR", 1, "Warden Basic")
+```
+
+`callback` stores the decision. `execute` invokes the callback during the routine. `castable` checks whether the spell may be used, while `cast` attempts the actual cast. See the [spell reference](/reference/spells) for range, charges, cooldown, and AoE helpers.

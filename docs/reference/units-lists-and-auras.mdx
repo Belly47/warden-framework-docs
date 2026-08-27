@@ -1,0 +1,35 @@
+---
+title: "Units, lists, and auras"
+description: "Stable state access helpers for rotation decisions."
+---
+
+## `warden.UnitManager`
+
+```lua
+warden.UnitManager:Get(token)
+warden.UnitManager:GetObject(guid)
+warden.UnitManager:RegisterVirtualUnit(name, handler)
+```
+
+`Get` returns the framework unit wrapper for standard tokens such as `player`, `target`, and `focus`. A virtual unit handler should return a valid unit wrapper or the framework’s none unit.
+
+## `warden.List`
+
+```lua
+local list = warden.List:New(values)
+list:each(callback)
+list:first(predicate)
+list:filter(predicate)
+list:count()
+```
+
+Other stable list operations are `push`, `pop`, `peek`, `contains`, `remove`, `map`, `find`, `findIndex`, `sort`, `reverse`, `clone`, `concat`, and `join`.
+
+## `warden.Aura`
+
+```lua
+local aura = warden.Aura:New(auraData)
+local seconds = aura:remains()
+```
+
+Aura data can disappear between ticks. Check that the aura exists before reading it.

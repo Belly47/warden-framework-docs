@@ -1,0 +1,23 @@
+---
+title: "Optional abilities"
+description: "Keep talent-dependent abilities from breaking routine registration."
+---
+
+Create and validate required core spells first. Register the routine only when all core spell objects are available. Optional spells can enhance the package afterwards.
+
+```lua
+local required = { "Builder", "Spender" }
+for _, name in ipairs(required) do
+  if not spells[name] then
+    error("warrior/arms/basic/rotation.lua: missing required spell " .. name)
+  end
+end
+
+if spells.OptionalCooldown then
+  spells.OptionalCooldown:callback(function(spell)
+    return spell:castable() and spell:cast()
+  end)
+end
+```
+
+Only render an option for an optional ability when that spell is present.

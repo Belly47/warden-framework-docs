@@ -1,0 +1,34 @@
+---
+title: "GUI and settings"
+description: "Give users a small, persistent settings surface."
+---
+
+Use `warden.GuiBuilder` to add settings and `warden.Config` to read saved values. Use stable, namespaced keys.
+
+```lua
+local WGG, warden = ...
+local gui = warden.GuiBuilder:New()
+local category = gui:Category("Warden Basic")
+local general = category:Tab("General")
+general:Checkbox({
+  text = "Use cooldown",
+  key = "wardenBasic.useCooldown",
+  default = true
+})
+general:Slider({
+  text = "Defensive health",
+  key = "wardenBasic.defensiveHealth",
+  min = 1,
+  max = 100,
+  step = 1,
+  default = 35
+})
+```
+
+```lua
+if warden.Config:Read("wardenBasic.useCooldown", true) then
+  spells.Cooldown:execute()
+end
+```
+
+The framework owns window lifecycle and persistence. Packages should add controls, not create a second configuration window.

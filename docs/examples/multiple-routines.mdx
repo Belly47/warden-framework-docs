@@ -1,0 +1,13 @@
+---
+title: "Multiple routines"
+description: "Register separate selectable profiles for the same specialization."
+---
+
+Use one namespace per profile. Both names appear in the Active Routine selector:
+
+```lua
+warden:RegisterRoutine(PveTick, "WARRIOR", 1, "Warden Arms PvE")
+warden:RegisterRoutine(PvpTick, "WARRIOR", 1, "Warden Arms PvP")
+```
+
+Each namespace needs its own spellbook namespace if it uses different objects. The selector is the authority: do not silently disable an entire selected profile based on content type.
