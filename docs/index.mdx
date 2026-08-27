@@ -1,25 +1,24 @@
 ---
 title: "Warden Framework v2"
-description: "Build reliable, local-first Warden rotation packages."
+description: "Build and load Warden rotation packages locally."
 ---
 
 <Note>
-These docs teach the supported Warden authoring surface. Framework internals, launcher transport, marketplace access, and authentication are intentionally out of scope.
+These guides show you how to create a rotation package and load it from your local WGG directory.
 </Note>
 
 ## Start here
 
-1. Set up a local `wardenrotations` package.
-2. Create a spellbook, UI settings, and one routine in that order.
-3. Register the routine with `warden:RegisterRoutine`.
+1. Create a `wardenrotations` folder in your WGG directory.
+2. Add a rotation package and list its files in `loadorder.json`.
+3. Start WGG and select your routine.
 
-The [first routine](/get-started/first-routine) guide produces a small, copyable package. The [reference](/reference/routines) explains every stable API used by rotation authors.
+The [local packages](/get-started/local-packages) guide explains the folder layout. Then follow [your first routine](/get-started/first-routine) to build a small working package.
 
-## What Warden provides
+## What you can build
 
-- A selectable routine registry and pause control.
-- Spell objects with callbacks and execution helpers.
+- Selectable routines with pause controls.
+- Spell objects, callbacks, and execution helpers.
 - Unit, aura, list, configuration, UI, alert, and status-frame helpers.
-- A WGG host object passed into each loaded file when a host capability is required.
 
-Write new packages against `warden`, the supported framework namespace.
+Each loaded file receives the `warden` framework API and the `WGG` host API when it needs host functionality. The [reference](/reference/routines) documents the APIs available to rotation authors.

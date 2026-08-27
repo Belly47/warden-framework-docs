@@ -22,8 +22,6 @@ local hit = WGG.VisCheck(100, 200, 50, 150, 250, 60)
 
 Default flags are `0x11` when no flags are passed.
 
-Gatherer compatibility note: old code expects DMC-style `TraceLine` where clear line returns `0`. A compatibility wrapper should convert `hit == false` to `0, 0, 0` and `hit == true` to the hit coordinates.
-
 ## CameraPosition
 
 `WGG.CameraPosition() -> x, y, z`
