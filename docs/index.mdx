@@ -1,26 +1,41 @@
 ---
 title: "Warden Framework v2"
-description: "Build and load Warden rotation packages locally."
+description: "Create a rotation package, load it from WGG, and build your routine."
 ---
 
 <Note>
-These guides show you how to create a rotation package and load it from your local WGG directory.
+Warden loads local Lua packages from the `wardenrotations` folder in your WGG directory.
 </Note>
 
-## Start here
+## Quick start
 
-1. Create a `wardenrotations` folder in your WGG directory.
-2. Add a rotation package and list its files in `loadorder.json`.
-3. Start WGG and select your routine.
+1. Open your WGG directory. A standard installation uses `C:/WGG`.
+2. Create `wardenrotations` if it does not exist.
+3. Copy a package into that folder and add its Lua files to `loadorder.json`.
+4. Start WGG and select the routine from the Active Routine menu.
 
-The [local packages](/get-started/local-packages) guide explains the folder layout. Then follow [your first routine](/get-started/first-routine) to build a small working package.
+Your folder should look like this:
+
+```text
+C:/WGG/
+  wardenrotations/
+    loadorder.json
+    warrior/arms/basic/
+      spells.lua
+      gui.lua
+      rotation.lua
+```
+
+Read [local packages](/get-started/local-packages) for the folder layout, then follow [your first routine](/get-started/first-routine) to build a working package.
 
 For enemy targeting, arena units, crowd control, and burst handling, see [PvP rotation basics](/pvp).
 
-## What you can build
+## How a package works
 
-- Selectable routines.
-- Spell objects, callbacks, and execution helpers.
-- Unit, aura, list, configuration, UI, alert, and status-frame helpers.
+Each Lua file receives the `warden` framework API and the `WGG` host API. A typical package:
 
-Each loaded file receives the `warden` framework API and the `WGG` host API when it needs host functionality. The [reference](/reference/routines) documents the APIs available to rotation authors.
+- defines its spellbook in `spells.lua`;
+- creates settings in `gui.lua`; and
+- registers the routine in `rotation.lua`.
+
+The [reference](/reference/routines) documents the APIs available to rotation authors.
