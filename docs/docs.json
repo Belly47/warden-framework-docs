@@ -23,6 +23,10 @@
         "pages": ["concepts/units-and-lists", "concepts/auras-and-talents", "concepts/toggles-and-status-frame", "concepts/events-alerts-and-draw"]
       },
       {
+        "group": "PvP",
+        "pages": ["pvp"]
+      },
+      {
         "group": "Reference",
         "pages": ["reference/routines", "reference/spells", "reference/units-lists-and-auras", "reference/configuration-and-ui", "reference/helpers-and-enums"]
       },

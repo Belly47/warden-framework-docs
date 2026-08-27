@@ -1,0 +1,185 @@
+---
+title: "PvP rotation basics"
+description: "Find enemy units and make better decisions around CC, immunities, and burst."
+---
+
+PvP routines usually need three things: a reliable enemy list, a way to identify important targets, and checks that stop the routine from wasting crowd control or dispels. The framework provides all three through `UnitManager`, the object-manager lists, and the PvP helpers loaded with the rotation core.
+
+## Get enemy units
+
+You do not create `UnitManager` yourself. Use the instance provided by Warden:
+
+```lua
+local UnitManager = warden.UnitManager
+local player = UnitManager:Get("player")
+local target = UnitManager:Get("target")
+
+if target.exists and target.enemy and target.alive then
+  -- The current target is a usable enemy.
+end
+```
+
+For a PvP rotation, `warden.activeenemies` is the usual list to scan. It contains the living hostile units that the object manager currently considers active. `warden.enemies` is the broader discovered-enemy list.
+
+```lua
+local enemy = warden.activeenemies:first(function(unit)
+  return unit.exists
+    and unit.enemy
+    and unit.alive
+    and unit.distanceto(player) <= 40
+end)
+
+if enemy.exists then
+  -- Use enemy as a spell target.
+end
+```
+
+`List:first` returns Warden's `none` unit when there is no match, so checking `.exists` is enough. Re-read the list on each routine tick; unit state is a snapshot of the current game state.
+
+Arena units can also be requested directly:
+
+```lua
+local arena1 = UnitManager:Get("arena1")
+local arena2 = UnitManager:Get("arena2")
+local arena3 = UnitManager:Get("arena3")
+
+if arena1.exists and arena1.enemy and arena1.ishealer then
+  -- arena1 is an enemy healer.
+end
+```
+
+The built-in `EnemyHealer` virtual unit checks arena units and discovered enemies, then returns the closest enemy healer it can find:
+
+```lua
+local enemyHealer = UnitManager.EnemyHealer
+
+if enemyHealer.exists then
+  -- Interrupt, crowd-control, or pressure the healer.
+end
+```
+
+## PvP lists provided by the rotation core
+
+The core keeps the PvP spell lists in one place so individual packages do not need to copy them. Treat these tables as read-only:
+
+| List | Purpose |
+| --- | --- |
+| `warden.pvp_cc_incap` | Incapacitate effects used by the DR tracker. |
+| `warden.pvp_cc_disorient` | Disorient effects used by the DR tracker. |
+| `warden.pvp_cc_stun` | Stuns used by the DR tracker. |
+| `warden.pvp_cc_immunities` | Full CC-immunity auras. |
+| `warden.pvp_cc_immune_magic` | Auras that prevent magical CC. |
+| `warden.pvp_cc_immune_physical` | Auras that prevent physical CC. |
+| `warden.pvp_incoming_cc_spells` | Cast IDs used to recognize incoming CC. |
+| `warden.pvp_burst_auras` | Offensive cooldown auras used for burst detection. |
+| `warden.pvp_dispel_auras` | PvP dispellable CC and control effects. |
+
+Use the helper functions for decisions rather than checking every ID yourself.
+
+## Avoid bad CC targets
+
+`IsCcImmune` accepts the optional category `"incap"`, `"disorient"`, or `"stun"`. `CanApplyCc` checks the next diminishing-return multiplier for that category.
+
+```lua
+local category = "stun"
+
+if enemy.exists
+  and not enemy.cc
+  and not warden.IsCcImmune(enemy, category)
+  and warden.CanApplyCc(enemy, category, 0.5)
+then
+  spells.Stun:cast(enemy)
+end
+```
+
+The DR values are:
+
+- Stage `0`: the next CC has full duration.
+- Stage `1`: the next CC lasts 50% as long.
+- Stage `2`: the next CC lasts 25% as long.
+- Stage `3`: the target is immune to that category.
+
+You can inspect the values directly when a package needs more detail:
+
+```lua
+local stage = warden.GetDrStage(enemy, "stun")
+local multiplier = warden.GetDrMultiplier(enemy, "stun")
+```
+
+Unit wrappers also expose `cc`, `immune`, `immunemagic`, and `immunephysical`. These properties work on normal units, arena units, and virtual units such as `EnemyHealer`.
+
+## React to enemy burst
+
+Burst detection is already connected to the unit aura cache. Use the unit properties instead of scanning the burst table in every routine tick:
+
+```lua
+if enemy.exists and enemy.bursting then
+  local burstSpellID = enemy.burstspellid
+  local burstLevel = enemy.burstlevel
+  local damageType = enemy.burstdamagetype
+
+  -- Use a defensive or counter-pressure action here.
+end
+```
+
+`burstdamagetype` is reported as `magic`, `physical`, `mixed`, or `unknown` when a burst aura is active.
+
+## Find a unit that needs a dispel
+
+`warden.UnitNeedsDispel(unit)` checks the maintained PvP dispel list as well as the framework's other dispelable effects:
+
+```lua
+local ally = warden.UnitManager:Get("player")
+
+if warden.UnitNeedsDispel(ally) then
+  spells.Dispel:cast(ally)
+end
+```
+
+For a group, scan `warden.fgroup` and choose the unit your package prioritizes:
+
+```lua
+local dispelTarget = warden.UnitManager:Get("none")
+
+warden.fgroup:each(function(ally)
+  if ally.exists and ally.alive and warden.UnitNeedsDispel(ally) then
+    dispelTarget = ally
+    return true -- stop after the first matching unit
+  end
+end)
+
+if dispelTarget.exists then
+  spells.Dispel:cast(dispelTarget)
+end
+```
+
+Keep target selection separate from the spell callback. That makes it easier to apply range, line-of-sight, role, and priority checks before casting.
+
+## Create a reusable PvP target
+
+If several parts of a package need the same target, register a virtual unit once and read it through `UnitManager`:
+
+```lua
+warden.UnitManager:RegisterVirtualUnit("lowest_enemy", function(manager)
+  local selected
+
+  warden.activeenemies:each(function(enemy)
+    if not enemy.exists or not enemy.enemy or not enemy.alive then
+      return false
+    end
+    if not selected or enemy.healthpercent < selected.healthpercent then
+      selected = enemy
+    end
+    return false
+  end)
+
+  return selected or manager:Get("none")
+end)
+
+local lowestEnemy = warden.UnitManager.lowest_enemy
+if lowestEnemy.exists then
+  -- Use the shared target in the rest of the package.
+end
+```
+
+Return the `none` unit when no target matches. This keeps callers safe and follows the same pattern used by the built-in virtual units.
