@@ -30,6 +30,6 @@ The root manifest lists files without the `.lua` extension and preserves order:
 
 Load spells before code that reads them, then build UI, then register the routine. A manifest entry that does not exist is a load error with its exact path.
 
-## Sharing packages
+## Sample rotations
 
-For public downloads, publish the ZIP as a release asset on GitHub or another file host, then link to that release from the docs. Keep the ZIP separate from the documentation source so package versions can be released independently.
+Use the [Warden sample rotations repository](https://github.com/Belly47/wardenrotations) as a starting point for package structure and `loadorder.json` entries. Copy the package files you want into your local `wardenrotations` folder, then keep your own changes in a separate folder or repository.

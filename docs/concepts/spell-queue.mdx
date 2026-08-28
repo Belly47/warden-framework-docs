@@ -1,0 +1,28 @@
+---
+title: "Spell Queue"
+description: "Configure action-bar keybind targets without changing your rotation routine."
+---
+
+Spell Queue stores an enabled state and target mode for each action-bar slot, per character, class, and specialization. Enable a slot in the Smart Queue layout, then click its mode column to cycle through the available targets.
+
+## Target modes
+
+| Mode | Target |
+| --- | --- |
+| `Target` | Your current target. |
+| `Player` | Your character. |
+| `Mouseover` | Your live mouseover unit. |
+| `Healer` | The nearest valid friendly healer. |
+| `Enemy Healer` | The nearest valid hostile healer. |
+| `Lowest Ally` | The lowest-health valid ally, excluding healing-immune allies. |
+| `Lowest Enemy` | The lowest-health valid hostile enemy. |
+| `Friends` / `Enemies` | The best eight-yard friendly or hostile cluster for area effects. |
+| `Cursor` | Blizzard's normal ground-placement cursor. |
+
+## How queued actions work
+
+Target modes directly select a unit for spell actions. Macros and other action-bar items still run from their original slot, so the macro's own target conditions remain in control.
+
+`Lowest Ally` includes the player and friendly group units, ignores dead units and configured healing-immunity targets, then uses nearest distance to break equal-health ties. `Lowest Enemy` uses active hostile units and falls back to your current hostile target if the object-manager list is temporarily sparse.
+
+If the selected unit disappears or fails the spell's normal range or line-of-sight checks, the queued cast does not choose a different target afterward. Pick the mode that matches the spell's intended target.

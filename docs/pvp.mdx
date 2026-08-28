@@ -124,6 +124,42 @@ end
 
 `burstdamagetype` is reported as `magic`, `physical`, `mixed`, or `unknown` when a burst aura is active.
 
+## Count attackers on an ally
+
+`unit:v2Attackers(option?, ignoreRange?)` counts alive hostile DPS units currently targeting that unit. By default it counts attackers within 40 yards. Pass `true` as the second argument to include every known attacker regardless of range.
+
+```lua
+local melee, ranged, cooldowns, total = player:v2Attackers()
+
+if cooldowns >= 2 then
+  spells.Defensive:cast(player)
+end
+```
+
+Use an option when the routine only needs one count:
+
+| Option | Count |
+| --- | --- |
+| `totalUnits` | All eligible attackers. |
+| `meleeUnits` | Attackers with a melee specialization. |
+| `rangedUnits` | Eligible attackers not classified as melee. |
+| `cooldowns` | Attackers with an active tracked PvP burst aura. |
+| `magic` | Attackers whose active burst is magic or mixed damage. |
+
+The lowercase `unit:v2attackers(...)` spelling is an alias. `warden.Enums.IsMelee(specID)` exposes the same specialization classification when a package needs to make its own decision.
+
+## Healing immunity
+
+Use `warden.IsHealImmune(unit)` before selecting a friendly heal target. It skips allies in tracked states such as Cyclone, Ice Block, Divine Shield, or similar effects where a direct heal cannot help.
+
+```lua
+if ally.exists and not warden.IsHealImmune(ally) then
+  spells.Heal:cast(ally)
+end
+```
+
+This is separate from CC immunity. Use `warden.IsCcImmune(unit, category)` together with `warden.CanApplyCc` for crowd-control decisions.
+
 ## Find a unit that needs a dispel
 
 `warden.UnitNeedsDispel(unit)` checks the maintained PvP dispel list as well as the framework's other dispelable effects:

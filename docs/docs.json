@@ -20,7 +20,7 @@
       },
       {
         "group": "Core concepts",
-        "pages": ["concepts/units-and-lists", "concepts/auras-and-talents", "concepts/toggles-and-status-frame", "concepts/events-alerts-and-draw"]
+        "pages": ["concepts/units-and-lists", "concepts/auras-and-talents", "concepts/spell-queue", "concepts/toggles-and-status-frame", "concepts/events-alerts-and-draw"]
       },
       {
         "group": "PvP",
