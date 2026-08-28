@@ -29,3 +29,56 @@ Supported stable elements are `Button`, `Checkbox`, `EditBox`, `Header`, `Slider
 ## `warden:AddGlobalToggle`
 
 Creates a framework status-frame control. Prefer a regular GUI control for package-specific tuning.
+
+## `warden:CreateFrameLayout`
+
+Creates a small, persistent layout controller for a package-owned frame. It is
+for runtime widgets such as a compact alert, timer, or icon group; use
+`GuiBuilder` for configuration pages and `AddGlobalToggle` for shared rotation
+controls.
+
+```lua
+local layout, errorMessage = warden:CreateFrameLayout({
+  key = "sampleFeral.alert",
+  name = "SampleFeralAlertFrame",
+  width = 180,
+  height = 40,
+  defaultPoint = { "CENTER", "UIParent", "CENTER", 0, 160 },
+  defaultScale = 1,
+  minScale = 0.75,
+  maxScale = 1.5,
+})
+
+if not layout then
+  error(errorMessage)
+end
+
+local icon = CreateFrame("Frame", nil, layout.frame)
+icon:SetSize(32, 32)
+layout:Anchor(icon, "LEFT", layout.frame, "LEFT", 8, 0)
+```
+
+`key` is required and must be stable and package-owned. Position, scale, and
+lock state are saved in the active Warden profile under that key. The helper
+creates a plain `Frame` when `frame` is omitted; alternatively, pass an
+existing frame in `frame = myFrame`.
+
+| Method | Purpose |
+| --- | --- |
+| `FrameLayout:SavePosition()` | Store the frame's current anchor. |
+| `FrameLayout:SetPosition(point, relativeTo, relativePoint, x, y)` | Move and persist the whole package frame. `relativeTo` can be a frame or its global name. |
+| `FrameLayout:RestorePosition()` / `FrameLayout:ResetPosition()` | Apply the saved anchor or restore `defaultPoint`. |
+| `FrameLayout:SetScale(value)` / `FrameLayout:GetScale()` | Persistently set or read scale, clamped by `minScale` and `maxScale`. |
+| `FrameLayout:SetLocked(value)` / `FrameLayout:IsLocked()` | Enable or prevent dragging. |
+| `FrameLayout:Anchor(widget, point, relativeTo, relativePoint, x, y)` | Clear and apply a simple anchor to one child widget. |
+| `FrameLayout:EnableDragging(handle?)` | Add left-button drag support to `handle` or the package frame. |
+
+`onMoved`, `onScaleChanged`, and `onLockChanged` can be supplied in the
+options table when a package needs to react to a layout change. Individual
+widgets are positioned by their anchors; the framework does not auto-layout or
+reposition them after that.
+
+<Note>
+Do not use this helper to move Blizzard protected frames or action-bar widgets.
+It is intended for frames created and owned by the rotation package.
+</Note>

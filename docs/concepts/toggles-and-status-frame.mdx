@@ -19,3 +19,8 @@ end
 ```
 
 Use one clear toggle per meaningful behavior. Package-specific numeric or checkbox settings belong in `GuiBuilder` and `Config`; do not add a toggle just to mirror a settings checkbox.
+
+The shared StatusFrame can be moved, locked, and scaled by the user, but its
+individual toggle tiles are automatically laid out by Warden. For a
+package-owned runtime widget that needs its own persisted position or scale,
+use [`warden:CreateFrameLayout`](/reference/configuration-and-ui).
