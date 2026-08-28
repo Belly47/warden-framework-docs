@@ -3,6 +3,24 @@ title: "Events, alerts, and drawing"
 description: "Give users feedback without turning routine code into a debug console."
 ---
 
+## Warden Insight
+
+Warden Insight is the framework-owned tactical feed. It shows the active
+routine's selected action, reactive utility, planned cooldowns, and nearby
+enemy count.
+
+- Click **X** in its header to hide it. Re-enable it under **Settings > Modules
+  > Insight**.
+- Click **D** to dock it below the Warden StatusFrame. It will then move with
+  the StatusFrame.
+- Click **-** to collapse it to its header; click **+** to expand it again.
+- The **Nearby enemy range** setting controls the count shown in the footer.
+  The count uses Warden's nearby hostile snapshot and is available out of
+  combat as well as in combat.
+
+If Insight itself disappears outside combat, turn off **Show only in combat**
+in **Settings > Modules > Insight**.
+
 Use alerts for visible, short-lived player feedback:
 
 ```lua
