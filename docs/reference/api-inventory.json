@@ -41,5 +41,7 @@
   {"symbol":"warden.grouphpcount","source":"Functions/Funcs.lua","signature":"(distance, percent)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.random","source":"Functions/Funcs.lua","signature":"(min, max)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.blockmovement","source":"Functions/Funcs.lua","signature":"(timewindow)","page":"reference/helpers-and-enums","status":"stable"},
+  {"symbol":"warden.IsShapeshiftSpellActive","source":"core.lua","signature":"(spell)","page":"reference/helpers-and-enums","status":"stable"},
+  {"symbol":"warden.IsStanceActive","source":"core.lua","signature":"(spell)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.CanApplyCc","source":"core.lua","signature":"(unit, category, minMult?)","page":"reference/helpers-and-enums","status":"stable"}
 ]
