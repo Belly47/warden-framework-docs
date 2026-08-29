@@ -64,6 +64,32 @@ are aliases for the framework functions. Queries fail closed when a position
 or facing value is unavailable, so an uncertain object-manager snapshot never
 inflates an AOE count.
 
+## Enemy clusters
+
+Clusters use the full nearby-hostile snapshot by default, including unengaged
+packs. That makes them suitable for preparation before initiating combat:
+
+```lua
+local cluster = warden.GetEnemyCluster(target, 8)
+if cluster.count >= 2 and spells.SweepingStrikes:ready() then
+  return spells.SweepingStrikes:cast(player)
+end
+
+local densest = warden.GetLargestEnemyCluster(8)
+```
+
+Pass `{ activeOnly = true }` to use only engaged enemies. A cluster exposes
+`anchor`, `members` (`warden.List`), `radius`, and `count`.
+
+## Stances and forms
+
+Player aura queries include active Druid forms, Paladin auras, and Warrior
+stances. Warden resolves the active form index with `GetShapeshiftForm()` and
+uses `GetShapeshiftFormInfo()` for the corresponding spell ID, so a manually
+selected Warrior stance is reflected by `player:aura(...)` and
+`player:aurafrom(...)` immediately after its form event. The direct helper is
+`warden.IsStanceActive(spell)`.
+
 ## `warden.List`
 
 ```lua
