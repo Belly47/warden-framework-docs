@@ -32,6 +32,12 @@ An enemy is active only when Warden has engagement evidence: combat state, a
 player/group target, positive threat, or DPS-dummy status. Unengaged nearby
 packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
 
+For `player.enemiesaround(range)`, Warden prefers WGG's native hostile-range
+count. It is range-based and does not require line of sight or camera visibility.
+The managed `warden.enemies` list still contains the individual object handles
+needed for target selection, so it can be temporarily smaller if the client has
+not exposed an off-screen object to the object manager.
+
 Packages that genuinely need an out-of-combat object snapshot can register a
 scan demand and release it when their widget or feature is hidden:
 
