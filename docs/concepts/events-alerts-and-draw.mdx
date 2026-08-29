@@ -27,4 +27,11 @@ Use alerts for visible, short-lived player feedback:
 warden.alert("Interrupt ready", 6552)
 ```
 
+## Frontal-cone preview
+
+Enable **Settings > Modules > Draws > Draw 10 yd frontal cone** to show the
+same player-facing 10-yard, 90-degree geometry used by
+`player.enemiesincone(10, 90)`. It is a visual aid only; rotations must use
+the cone query itself and continue to work when all drawing is disabled.
+
 Drawing APIs are optional presentation helpers; every rotation must continue functioning when drawing is disabled. Avoid per-tick chat output—surface actionable failures through the framework error path instead.

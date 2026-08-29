@@ -44,3 +44,16 @@ For example, bind a direct heal to `Lowest Ally`, a purge or execute to
 `Lowest Enemy`, a peel to `Enemy Healer`, and a self-defensive to `Player`.
 Macros keep their own action-bar targeting clauses, so a macro using
 `[@mouseover]` or modifier conditions remains responsible for those choices.
+
+## Adaptive `SpellQueueWindow`
+
+**Settings > Modules > Queue** includes an optional optimizer for Blizzard's
+`SpellQueueWindow` CVar. It targets observed world latency plus a configurable
+safety margin (100 ms by default), then clamps the result to 100-400 ms. A
+40 ms hysteresis avoids rewriting the CVar for insignificant latency noise.
+
+The optimizer is off by default and never writes the CVar in combat. A deferred
+sample is retried immediately when combat ends. Disabling the option only stops
+future changes; it deliberately leaves your current CVar value in place. The
+framework's Spell Handler already reads the live queue window, so this tunes
+the existing queue behaviour rather than creating a second queue.

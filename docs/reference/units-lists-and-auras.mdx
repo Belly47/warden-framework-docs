@@ -25,6 +25,7 @@ and re-read its properties; do not cache a raw GUID or object pointer yourself.
 warden.enemies          -- all valid nearby hostiles
 warden.activeenemies    -- engaged hostiles only
 target.enemiesaround(8) -- broad compatibility proximity count
+player.enemiesincone(10, 90) -- hostiles in the player's 10 yd / 90 degree cone
 ```
 
 An enemy is active only when Warden has engagement evidence: combat state, a
@@ -41,6 +42,27 @@ warden:SetObjectManagerScanDemand("my-package-widget", false)
 
 Keep the demand scoped to actual use; scanning is otherwise suspended outside
 combat when no enabled rotation or visible Insight consumer needs it.
+
+## Frontal-cone queries
+
+Use a cone query for abilities whose hit area is in front of the player, such
+as Shockwave. The arc is the total width in degrees, not a half-angle:
+
+```lua
+if player.enemiesincone(10, 90) >= 3 then
+  return spells.Shockwave:cast(player)
+end
+
+local targets = warden.GetEnemiesInCone(player, 10, 90)
+local engaged = warden.CountEnemiesInCone(player, 10, 90, { activeOnly = true })
+```
+
+`Unit:enemiesincone(range, arc, activeOnly?)` is the public method; dot syntax
+(`player.enemiesincone(...)`) and `player.enemiesinfrontalcone(...)` are
+compatible aliases. `GetEnemiesInFrontalCone` and `CountEnemiesInFrontalCone`
+are aliases for the framework functions. Queries fail closed when a position
+or facing value is unavailable, so an uncertain object-manager snapshot never
+inflates an AOE count.
 
 ## `warden.List`
 
