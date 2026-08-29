@@ -36,9 +36,34 @@ spell:chargesfractional()
 
 Use `castable` before `cast` when your callback has nontrivial conditions. All values are current-tick state; do not cache them across ticks.
 
+## Live spell state and replacements
+
+```lua
+local hammer = warden.SpellHandler.NewSpell(24275) -- Hammer of Wrath
+local state = hammer:state()
+
+if state.replaced then
+    print(state.name, state.id, state.source)
+end
+
+local effectiveID = hammer:effectiveid()
+```
+
+`Spell:state()` resolves the ability that is live **right now**. Its fields are:
+
+- `baseID`: the ID used to create the spell object.
+- `id`, `name`, `icon`, `castTime`, `minRange`, `maxRange`: the effective spell Warden will check and cast.
+- `source`: `base`, `runtime`, or `fallback`.
+- `replaced`: `true` when the effective ID differs from `baseID`.
+- `overlayed`: whether Blizzard is currently showing a spell-activation/proc glow.
+
+Warden uses this same effective state for known checks, usability, cooldowns, charges, range, casts, cast history, and Insight. Blizzard's runtime replacement API is authoritative; Warden uses a verified legacy fallback only where a client does not report the replacement.
+
+`Spell:overlayed()` is intentionally narrower than `state().replaced`: it means the spell is glowing because of an activation/proc, not that the game changed it into another ability. Abilities granted independently by a talent remain separate spell objects unless Blizzard reports an actual replacement.
+
 ## Other supported helpers
 
-`getcasttime`, `getchanneltime`, `timetofull`, `timetocharges`, `timetonextcharge`, `overlayed`, `waslastcast`, `rank`, `count`, `castcursor`, `smartaoe`, and `smartaoeposition` are source-verified. Use them only when the associated spell object exists.
+`getcasttime`, `getchanneltime`, `timetofull`, `timetocharges`, `timetonextcharge`, `waslastcast`, `rank`, `count`, `castcursor`, `castgroundat`, `smartaoe`, and `smartaoeposition` are source-verified. Use them only when the associated spell object exists.
 
 ## Talent points
 

@@ -91,6 +91,12 @@ An enemy is active only when Warden has engagement evidence: combat state, a
 player/group target, positive threat, or DPS-dummy status. Unengaged nearby
 packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
 
+Warden treats these current training-dummy NPCs as hostile and active for safe
+rotation testing without needing combat: `243166` (Normal Tank Dummy),
+`243167`/`243168` (Dungeoneer's Training Dummy), `243207`/`243214` (Training
+Dummy), `243208` (Cleave Training Dummy), and `243211` (PvP Training Dummy).
+They are still distance-filtered by range APIs such as `enemiesaround(40)`.
+
 For `player.enemiesaround(range)`, Warden combines WGG's native hostile-range
 count with the managed hostile list and a confirmed current target fallback. The
 largest confirmed count wins, so a transient native zero or object-list rebuild

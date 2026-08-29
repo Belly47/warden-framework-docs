@@ -65,7 +65,15 @@ Statuses include `submitted`, `success`, `failed`, `interrupted`, and `rejected`
 
 ## Ground-targeted spells
 
-For a ground-targeted spell, `smartaoeposition` finds the best position using the active enemies and group units. `smartaoe` casts at that position:
+To place a spell directly at the current target, use `castgroundat`. It resolves the target's WGG world position and places the ground cursor through `WGG.MouseClick`:
+
+```lua
+if spells.Meteor:castgroundat("target") then
+  return true
+end
+```
+
+For clustered placement, `smartaoeposition` finds the best position using the active enemies and group units. `smartaoe` casts at that position:
 
 ```lua
 local position = spells.GroundEffect:smartaoeposition(target, {
@@ -83,4 +91,4 @@ if position then
 end
 ```
 
-Use `ignoreEnemies` or `ignoreFriends` when the spell should only consider one side. A position result contains `x`, `y`, `z`, and `hitCount`.
+Use `ignoreEnemies` or `ignoreFriends` when the spell should only consider one side, and `minHits` to require a cluster size. A position result contains `x`, `y`, `z`, and `hitCount`.
