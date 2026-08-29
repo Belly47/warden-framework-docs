@@ -19,6 +19,65 @@ Dynamic native handles for party, raid, pet, arena, target, focus, and
 mouseover units are invalidated by their roster/unit events. Keep the wrapper
 and re-read its properties; do not cache a raw GUID or object pointer yourself.
 
+## Player power and resources
+
+Power values are numeric unit properties. They are normalized through Warden's
+secret-value boundary, so use them directly in rotation comparisons instead of
+calling `UnitPower` yourself:
+
+```lua
+-- Feral
+if player.energy >= 50 and player.combopoints >= 5 then
+  return spells.ferocious_bite:cast(target)
+end
+
+-- Guardian
+if player.rage >= 40 and player.ragedeficit >= 20 then
+  return spells.ironfur:cast(player)
+end
+
+-- Paladin
+if player.holypower >= 3 then
+  return spells.templars_verdict:cast(target)
+end
+```
+
+Every supported resource has the same property family:
+
+| Property | Meaning |
+| --- | --- |
+| `player.energy` | Current power. Replace `energy` with any supported resource. |
+| `player.energymax` | Maximum power. |
+| `player.energypct` | Current power as a percentage of maximum. |
+| `player.energydeficit` | Amount missing before reaching maximum. |
+| `player.energyregen` | Passive regeneration per second; `0` when unavailable. |
+| `player.energytimetomax` | Seconds until full at the current passive regeneration rate; `math.huge` when it cannot regenerate. |
+
+Supported names are `mana`, `rage`, `focus`, `energy`, `combopoints`,
+`runes`, `runicpower`, `soulshards`, `astralpower`, `holypower`,
+`alternatepower`, `maelstrom`, `chi`, `insanity`, `arcanecharges`,
+`fury`, `pain`, and `essence`. Compatibility aliases are `cp` for
+`combopoints`, `shards` for `soulshards`, and `ap` or `lunarpower`
+for `astralpower`.
+
+Runes use the same properties, with `player.runes` returning the number ready
+and `player.runesmax` returning `6`. For an active threshold, use
+`Unit:timeto(powerType, amount)`:
+
+```lua
+if player:timeto("energy", 50) <= warden.gcd() then
+  return spells.tigers_fury:cast(player)
+end
+
+if player:runestimeto(2) <= 1.5 then
+  return spells.death_and_decay:cast(player)
+end
+```
+
+`Unit:timeto` returns `math.huge` when the requested resource does not have
+positive passive regeneration. `Unit:runestimeto` is the rune-specific helper
+for a requested ready-rune count.
+
 ## Enemy lists
 
 ```lua
@@ -32,11 +91,11 @@ An enemy is active only when Warden has engagement evidence: combat state, a
 player/group target, positive threat, or DPS-dummy status. Unengaged nearby
 packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
 
-For `player.enemiesaround(range)`, Warden prefers WGG's native hostile-range
-count. It is range-based and does not require line of sight or camera visibility.
-The managed `warden.enemies` list still contains the individual object handles
-needed for target selection, so it can be temporarily smaller if the client has
-not exposed an off-screen object to the object manager.
+For `player.enemiesaround(range)`, Warden combines WGG's native hostile-range
+count with the managed hostile list and a confirmed current target fallback. The
+largest confirmed count wins, so a transient native zero or object-list rebuild
+cannot erase a target already known to be hostile and in range. The native count
+is range-based and does not require line of sight or camera visibility.
 
 Packages that genuinely need an out-of-combat object snapshot can register a
 scan demand and release it when their widget or feature is hidden:
@@ -76,12 +135,12 @@ Clusters use the full nearby-hostile snapshot by default, including unengaged
 packs. That makes them suitable for preparation before initiating combat:
 
 ```lua
-local cluster = warden.GetEnemyCluster(target, 8)
+local cluster = warden.EnemyCluster(target, 8)
 if cluster.count >= 2 and spells.SweepingStrikes:ready() then
   return spells.SweepingStrikes:cast(player)
 end
 
-local densest = warden.GetLargestEnemyCluster(8)
+local densest = warden.LargestEnemyCluster(8)
 ```
 
 Pass `{ activeOnly = true }` to use only engaged enemies. A cluster exposes
