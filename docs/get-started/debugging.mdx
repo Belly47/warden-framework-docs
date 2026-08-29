@@ -10,6 +10,17 @@ Check these in order:
 3. Match the spellbook and `RegisterRoutine` class, spec, and namespace exactly.
 4. Check the Warden error message: framework and local failures include the responsible file path.
 
+Run `/warden status` for a compact backend snapshot. It includes canonical
+UnitManager/ObjectManager identity, loaded-file counts, object refresh
+generation and last error, nearby-versus-active enemy counts, active form
+state, and any temporarily quarantined component.
+
+Runtime callbacks use an owner-scoped circuit breaker. Three consecutive
+failures within ten seconds quarantine only that routine/module/callback for
+ten seconds, then allow one recovery probe. The first traceback and circuit
+state changes are logged with duplicate throttling; toggling or reloading the
+component clears its breaker.
+
 Use one guarded optional spell pattern. Do not bind a callback to an absent talent:
 
 ```lua

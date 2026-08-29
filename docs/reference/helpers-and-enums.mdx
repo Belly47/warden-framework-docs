@@ -15,10 +15,23 @@ description: "Stable Warden helpers for common rotation work."
 | `warden.blockmovement(timewindow)` | Temporarily block movement behavior. |
 | `warden.IsShapeshiftSpellActive(spell)` | Check whether the player has the supplied form, aura, or stance spell active. |
 | `warden.IsStanceActive(spell)` | Alias for `IsShapeshiftSpellActive`; use this name in Warrior stance logic. |
+| `warden.IsPaladinAuraActive(spell)` | Compatibility alias for Paladin states exposed through the form/aura bar. |
+| `warden.IsHealImmune(unit, configKey?)` | Check the maintained direct-healing immunity list. |
+| `warden.IsCcImmune(unit, category?)` | Check full or category-relevant CC immunity. |
+| `warden.IsHardCced(unit)` | Check the maintained hard-control aura lists. |
+| `warden.GetDrStage(unit, category)` | Return tracked DR stage `0` through `3`. |
+| `warden.GetDrMultiplier(unit, category)` | Return the next tracked duration multiplier. |
 | `warden.CanApplyCc(unit, category, minMult)` | Check diminishing-return eligibility for `incap`, `disorient`, or `stun`. |
+| `warden.UnwrapSecret(value)` | Safely unwrap one WGG secret value for package-local use. |
+| `warden.NumberValue(value, fallback?)` | Normalize a possibly secret numeric value. |
 
 `warden.Enums` and `warden.Lists` provide framework-maintained reference data. Treat enum tables as read-only. The exact available categories are versioned with the framework and should be feature-checked before use.
 
 For compatibility, `player.aura(stanceSpellID)` also recognizes an active
 stance/form when the client exposes it only through the stance bar. New code is
 clearer when it calls `warden.IsStanceActive(spells.BattleStance)` directly.
+
+The supported DR categories are exactly `incap`, `disorient`, and `stun`.
+Results are bounded by Warden's maintained aura/DR lists; full damage immunity,
+every soft-control effect, and arbitrary encounter immunity are outside this
+stable PvP contract.

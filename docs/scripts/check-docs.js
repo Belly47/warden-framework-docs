@@ -4,7 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const docsRoot = path.resolve(__dirname, '..');
-const frameworkRoot = path.resolve(docsRoot, '..');
+const configuredFrameworkRoot = process.env.WARDEN_FRAMEWORK_ROOT;
+const frameworkRoot = configuredFrameworkRoot
+  ? path.resolve(configuredFrameworkRoot)
+  : path.resolve(docsRoot, '..', '..', 'LRrotations');
 const config = JSON.parse(fs.readFileSync(path.join(docsRoot, 'docs.json'), 'utf8'));
 const failures = [];
 const pagePath = (page) => path.join(docsRoot, `${page}.mdx`);
@@ -16,9 +19,21 @@ for (const group of config.navigation.groups || []) {
 }
 
 const inventory = JSON.parse(fs.readFileSync(path.join(docsRoot, 'reference', 'api-inventory.json'), 'utf8'));
+const inventorySymbols = new Set();
 for (const entry of inventory) {
   if (entry.status !== 'stable') continue;
-  if (!fs.existsSync(path.join(frameworkRoot, entry.source))) failures.push(`Inventory source is missing for ${entry.symbol}: ${entry.source}`);
+  if (inventorySymbols.has(entry.symbol)) failures.push(`Duplicate inventory symbol: ${entry.symbol}`);
+  inventorySymbols.add(entry.symbol);
+  const sourcePath = path.join(frameworkRoot, entry.source);
+  if (!fs.existsSync(sourcePath)) {
+    failures.push(`Inventory source is missing for ${entry.symbol}: ${entry.source}`);
+  } else {
+    const source = fs.readFileSync(sourcePath, 'utf8').toLowerCase();
+    const symbolTail = entry.symbol.split(/[.:]/).pop().toLowerCase();
+    if (!source.includes(symbolTail)) {
+      failures.push(`Inventory symbol was not found in source: ${entry.symbol} (${entry.source})`);
+    }
+  }
   const referencePage = pagePath(entry.page);
   if (!fs.existsSync(referencePage)) {
     failures.push(`Inventory page is missing for ${entry.symbol}: ${entry.page}.mdx`);

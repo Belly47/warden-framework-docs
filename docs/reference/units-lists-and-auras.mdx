@@ -11,7 +11,36 @@ warden.UnitManager:GetObject(guid)
 warden.UnitManager:RegisterVirtualUnit(name, handler)
 ```
 
-`Get` returns the framework unit wrapper for standard tokens such as `player`, `target`, and `focus`. A virtual unit handler should return a valid unit wrapper or the framework’s none unit.
+`Get` returns the framework unit wrapper for standard tokens such as `player`,
+`target`, and `focus`. A virtual unit handler should return a valid unit wrapper
+or the framework's `none` unit.
+
+Dynamic native handles for party, raid, pet, arena, target, focus, and
+mouseover units are invalidated by their roster/unit events. Keep the wrapper
+and re-read its properties; do not cache a raw GUID or object pointer yourself.
+
+## Enemy lists
+
+```lua
+warden.enemies          -- all valid nearby hostiles
+warden.activeenemies    -- engaged hostiles only
+target.enemiesaround(8) -- broad compatibility proximity count
+```
+
+An enemy is active only when Warden has engagement evidence: combat state, a
+player/group target, positive threat, or DPS-dummy status. Unengaged nearby
+packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
+
+Packages that genuinely need an out-of-combat object snapshot can register a
+scan demand and release it when their widget or feature is hidden:
+
+```lua
+warden:SetObjectManagerScanDemand("my-package-widget", true)
+warden:SetObjectManagerScanDemand("my-package-widget", false)
+```
+
+Keep the demand scoped to actual use; scanning is otherwise suspended outside
+combat when no enabled rotation or visible Insight consumer needs it.
 
 ## `warden.List`
 
@@ -33,3 +62,48 @@ local seconds = aura:remains()
 ```
 
 Aura data can disappear between ticks. Check that the aura exists before reading it.
+
+## Unit aura calls and forms
+
+These calls support both legacy dot syntax and ordinary colon syntax:
+
+The public signatures are `Unit:aura(spell, source?)`,
+`Unit:auraremains(spell, source?)`, `Unit:auracount(spell, source?)`, and
+`Unit:aurauptime(spell, source?)`.
+
+```lua
+local auraA = player.aura(spells.BattleStance.id)
+local auraB = player:aura(spells.BattleStance.id)
+
+local remains = player:auraremains(spells.BattleStance.id)
+local stacks = player:auracount(spells.BattleStance.id)
+local uptime = player:aurauptime(spells.BattleStance.id)
+```
+
+For the player, active Druid forms, Warrior stances, and supported Paladin
+form/aura-bar states are represented as synthetic auras when the client does
+not publish a normal unit aura. Synthetic form auras have a stable spell ID,
+source, count, start time, uptime, and indefinite (`999`) remains value.
+
+Prefer the direct stance helper when the intent is a state check:
+
+```lua
+if not warden.IsStanceActive(spells.BattleStance) then
+  return spells.BattleStance:cast(player)
+end
+```
+
+## PvP unit state
+
+Unit wrappers expose `cc`, `immune`, `immunemagic`, and `immunephysical`.
+Compatibility aliases include `iscc`, `CC`, `ccimmune`, `isimmune`, `Immune`,
+and `immunities`. These names report the maintained CC-immunity contract, not
+a general guarantee that every damage or soft-control effect is blocked.
+
+The corresponding property names are `Unit.cc`, `Unit.immune`,
+`Unit.immunemagic`, and `Unit.immunephysical`.
+
+`Unit:v2Attackers(option?, ignoreRange?)` and lowercase
+`Unit:v2attackers(...)` count hostile DPS pressure on the receiver. See
+[PvP rotation basics](/pvp#count-attackers-on-an-ally) for options and return
+ordering.

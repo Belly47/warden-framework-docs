@@ -1,0 +1,32 @@
+name: Validate Warden documentation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout documentation
+        uses: actions/checkout@v4
+        with:
+          path: docs-repository
+
+      - name: Checkout framework source
+        uses: actions/checkout@v4
+        with:
+          repository: Belly47/LRrotations
+          path: framework
+
+      - name: Install Lua compiler
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+
+      - name: Validate source links, navigation, and examples
+        run: |
+          LUAC=luac5.1 WARDEN_FRAMEWORK_ROOT="$GITHUB_WORKSPACE/framework" \
+            node "$GITHUB_WORKSPACE/docs-repository/docs/scripts/check-docs.js"

@@ -1,6 +1,6 @@
 ---
-title: "PvP rotation basics"
-description: "Find enemy units and make better decisions around CC, immunities, and burst."
+title: "PvP targeting & immunities"
+description: "Find enemy units and make source-backed decisions around CC, immunities, DR, and burst."
 ---
 
 PvP routines usually need three things: a reliable enemy list, a way to identify important targets, and checks that stop the routine from wasting crowd control or dispels. The framework provides all three through `UnitManager`, the object-manager lists, and the PvP helpers loaded with the rotation core.
@@ -19,7 +19,7 @@ if target.exists and target.enemy and target.alive then
 end
 ```
 
-For a PvP rotation, `warden.activeenemies` is the usual list to scan. It contains the living hostile units that the object manager currently considers active. `warden.enemies` is the broader discovered-enemy list.
+For a PvP rotation, `warden.activeenemies` is the usual list to scan. It contains only living hostiles with engagement evidence: combat state, a player/group target, positive threat, or dummy status. `warden.enemies` and `unit.enemiesaround(range)` are broader nearby-hostile sources and can include unengaged units.
 
 ```lua
 local enemy = warden.activeenemies:first(function(unit)
@@ -107,6 +107,11 @@ local multiplier = warden.GetDrMultiplier(enemy, "stun")
 ```
 
 Unit wrappers also expose `cc`, `immune`, `immunemagic`, and `immunephysical`. These properties work on normal units, arena units, and virtual units such as `EnemyHealer`.
+
+The stable DR categories are exactly `incap`, `disorient`, and `stun`. The
+helpers are only as broad as the tracked aura and DR lists shown above. General
+damage immunity, every soft-control effect, and encounter-specific effect
+immunity are not implied by `immune` or its compatibility aliases.
 
 ## React to enemy burst
 

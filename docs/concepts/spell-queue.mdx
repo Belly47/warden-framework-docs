@@ -5,6 +5,10 @@ description: "Configure action-bar keybind targets without changing your rotatio
 
 Spell Queue stores an enabled state and target mode for each action-bar slot, per character, class, and specialization. Enable a slot in the Smart Queue layout, then click its mode column to cycle through the available targets.
 
+The saved key contains the character name, class, specialization, and action
+slot. Changing specialization therefore restores that specialization's own
+mode choices without overwriting another setup.
+
 ## Target modes
 
 | Mode | Target |
@@ -25,4 +29,18 @@ Target modes directly select a unit for spell actions. Macros and other action-b
 
 `Lowest Ally` includes the player and friendly group units, ignores dead units and configured healing-immunity targets, then uses nearest distance to break equal-health ties. `Lowest Enemy` uses active hostile units and falls back to your current hostile target if the object-manager list is temporarily sparse.
 
+Units with unresolved health are not allowed to win a lowest-health choice.
+Healer selection is deterministic: Warden merges native group/arena tokens
+with object-manager units, deduplicates them by canonical GUID, and chooses the
+nearest eligible healer with a stable GUID tie-break.
+
+Friendly and enemy cluster choices are cached for the queued entry and current
+object-manager generation, so the eight-yard calculation is not repeated on
+every queue pulse.
+
 If the selected unit disappears or fails the spell's normal range or line-of-sight checks, the queued cast does not choose a different target afterward. Pick the mode that matches the spell's intended target.
+
+For example, bind a direct heal to `Lowest Ally`, a purge or execute to
+`Lowest Enemy`, a peel to `Enemy Healer`, and a self-defensive to `Player`.
+Macros keep their own action-bar targeting clauses, so a macro using
+`[@mouseover]` or modifier conditions remains responsible for those choices.

@@ -24,4 +24,19 @@ end)
 
 Unit properties depend on the current game state. Treat values as temporary snapshots and re-read them on the next routine tick.
 
+## Nearby versus engaged enemies
+
+The three enemy views deliberately answer different questions:
+
+| API | Meaning |
+| --- | --- |
+| `warden.enemies` | Every valid nearby hostile currently discovered, including unengaged packs. |
+| `warden.activeenemies` | Only hostiles with engagement evidence: combat state, a group/player target, positive threat, or dummy status. |
+| `unit.enemiesaround(range)` | Broad nearby-hostile count around that unit; this remains a compatibility proximity helper. |
+
+Use `activeenemies` for combat priorities and time-to-die calculations. Use
+`enemies`, `enemiesaround`, or the Insight nearby count for pre-pull awareness.
+Closing or collapsing Insight releases its out-of-combat scan request; an
+enabled rotation can still request the same nearby snapshot.
+
 For PvP pressure around one ally, use `unit:v2Attackers()`; see [PvP rotation basics](/pvp) for its target, range, and burst-count rules.

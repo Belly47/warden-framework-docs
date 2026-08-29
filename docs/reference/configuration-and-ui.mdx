@@ -15,6 +15,18 @@ warden.Config:ClearCache()
 
 Use `SetDefault` while defining a control and `Read` during routine execution. Keys are package-owned strings; prefix them with your namespace.
 
+`warden.Config:Write(key, value)` returns `success, errorMessage`. Existing
+packages may continue ignoring the result. Check it when a failed save should
+be visible to the user; Warden validates serialization and leaves the previous
+cached value untouched when persistence fails.
+
+```lua
+local saved, errorMessage = warden.Config:Write("myRoutine.useCooldowns", true)
+if not saved then
+  warden:Logger("Could not save setting: " .. tostring(errorMessage), "error")
+end
+```
+
 ## `warden.GuiBuilder`
 
 ```lua
