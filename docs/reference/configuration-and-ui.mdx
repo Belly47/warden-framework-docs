@@ -40,7 +40,93 @@ Supported stable elements are `Button`, `Checkbox`, `EditBox`, `Header`, `Slider
 
 ## `warden:AddGlobalToggle`
 
-Creates a framework status-frame control. Prefer a regular GUI control for package-specific tuning.
+Creates a persistent framework toggle and returns its state handle. Prefer a
+regular GUI control for package-specific numeric tuning.
+
+```lua
+local cooldowns = warden:AddGlobalToggle({
+  label = "Cooldowns",
+  var = "myPackage.cooldowns",
+  icon = 318,
+  value = true,
+})
+
+cooldowns:SetValue(false)
+print(cooldowns:GetValue()) -- false
+```
+
+| Handle method | Behavior |
+| --- | --- |
+| `GetValue()` | Returns the current boolean state. |
+| `SetValue(value)` | Normalizes and persists the boolean state, refreshes a framework tile when present, and returns the resulting state. It does not invoke `onClick`. |
+| `UpdateDisplay()` | Repaints a framework-owned tile. It is a safe no-op when the package owns presentation. |
+| `SetCustomText(text, color?)` | Changes the framework tile's tooltip text and optional tooltip color. |
+
+The fully qualified public method names are `WardenGlobalToggle:GetValue`,
+`WardenGlobalToggle:SetValue`, `WardenGlobalToggle:UpdateDisplay`, and
+`WardenGlobalToggle:SetCustomText`.
+
+Toggle values use the StatusFrame's own persistent storage. Writing the
+toggle's `var` through `warden.Config` does not change its value.
+
+Set `ownsPresentation = true` when a package draws its own control with
+`CreateFrameLayout` and only needs Warden to own state, persistence, callbacks,
+and status-hotkey integration. No shared StatusFrame tile is created. The first
+registration of a `var` determines its presentation mode.
+
+```lua
+local customToggle = warden:AddGlobalToggle({
+  label = "GSTV Cooldowns",
+  var = "gstv.cooldowns",
+  value = true,
+  ownsPresentation = true,
+})
+
+-- In the package-owned button's click handler:
+customToggle:SetValue(not customToggle:GetValue())
+```
+
+## StatusFrame theme
+
+`warden:SetStatusFrameTheme(palette)` changes the shared StatusFrame for the
+current session. All five RGBA roles are required and every component must be
+between `0` and `1`. The call returns `success, errorMessage`; invalid palettes
+do not partially apply.
+
+```lua
+local applied, errorMessage = warden:SetStatusFrameTheme({
+  background = { 0.03, 0.05, 0.09, 1.00 },
+  border = { 0.20, 0.35, 0.46, 0.92 },
+  disabled = { 0.50, 0.59, 0.66, 0.76 },
+  enabled = { 0.29, 0.60, 0.92, 1.00 },
+  hover = { 0.05, 0.12, 0.18, 1.00 },
+})
+```
+
+The theme applies immediately to existing controls and to controls registered
+later. Theme ownership is global and last-call-wins. It is not persisted;
+`warden:ResetStatusFrameTheme()` restores the framework defaults.
+
+## Framework version
+
+```lua
+local version = warden:GetVersion() -- "2.0.0"
+local info = warden:GetVersionInfo()
+-- info.version, info.apiVersion, info.revision
+```
+
+`apiVersion` is the compatibility level packages should use for feature gates.
+`revision` is an optional opaque fingerprint of the ordered framework source
+actually loaded. It may be absent while the launcher is still loading; compare
+it for diagnostics but do not parse it.
+
+<Note>
+Only APIs and returned fields documented here are public. Raw implementation
+fields such as `button`, `border`, `GlobalStatusFrame`, `StatusFrame`,
+`configFrame`, and their child regions may change without compatibility
+guarantees. Use `CreateFrameLayout` for package-owned frames and the supported
+theme methods for the shared StatusFrame.
+</Note>
 
 ## `warden:CreateFrameLayout`
 

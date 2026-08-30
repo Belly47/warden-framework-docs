@@ -13,7 +13,7 @@ warden.Rotation.Cooldown = warden:AddGlobalToggle({
   value = true
 })
 
-if warden.Rotation.Cooldown.value then
+if warden.Rotation.Cooldown:GetValue() then
   spells.Cooldown:execute()
 end
 ```
@@ -24,3 +24,23 @@ The shared StatusFrame can be moved, locked, and scaled by the user, but its
 individual toggle tiles are automatically laid out by Warden. For a
 package-owned runtime widget that needs its own persisted position or scale,
 use [`warden:CreateFrameLayout`](/reference/configuration-and-ui).
+
+Package-owned controls can drive the same persistent toggle state without
+creating a duplicate shared tile:
+
+```lua
+local toggle = warden:AddGlobalToggle({
+  label = "Package cooldowns",
+  var = "myPackage.cooldowns",
+  value = true,
+  ownsPresentation = true,
+})
+
+myButton:SetScript("OnClick", function()
+  toggle:SetValue(not toggle:GetValue())
+end)
+```
+
+`SetValue` persists and refreshes the toggle but deliberately does not call the
+registration's `onClick` callback. Framework status hotkeys remain available
+for package-presented toggles.

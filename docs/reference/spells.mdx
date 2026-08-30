@@ -49,6 +49,9 @@ end
 local effectiveID = hammer:effectiveid()
 ```
 
+`Spell:effectiveid()` returns the current effective spell ID directly when the
+full state record is not needed.
+
 `Spell:state()` resolves the ability that is live **right now**. Its fields are:
 
 - `baseID`: the ID used to create the spell object.
