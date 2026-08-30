@@ -83,6 +83,8 @@ for a requested ready-rune count.
 ```lua
 warden.enemies          -- all valid nearby hostiles
 warden.activeenemies    -- engaged hostiles only
+warden.castingenemies   -- engaged enemies currently casting or channeling
+warden.interruptibleenemies -- casting/channeling enemies that can be interrupted
 target.enemiesaround(8) -- broad compatibility proximity count
 player.enemiesincone(10, 90) -- hostiles in the player's 10 yd / 90 degree cone
 ```
@@ -90,6 +92,28 @@ player.enemiesincone(10, 90) -- hostiles in the player's 10 yd / 90 degree cone
 An enemy is active only when Warden has engagement evidence: combat state, a
 player/group target, positive threat, or DPS-dummy status. Unengaged nearby
 packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
+
+## Active defensives
+
+`unit.defensive` reports whether the unit has a recognized player-class
+defensive aura. `unit.defensiveaura` returns that aura, and
+`unit.defensivecategory` returns one of `reduction`, `absorb`, `immunity`, or
+`majorHealing`.
+
+```lua
+if player.defensive then
+  -- Avoid overlapping another personal defensive.
+end
+
+warden.interruptibleenemies:each(function(enemy)
+  -- Generic PvE kick candidate.
+end)
+
+local priority = warden.UnitManager.prio_int_target
+```
+
+The defensive catalogue covers player-class personal and external defensives.
+Dungeon and raid NPC shields remain encounter-specific rotation data.
 
 Warden treats these current training-dummy NPCs as hostile and active for safe
 rotation testing without needing combat: `243166` (Normal Tank Dummy),
