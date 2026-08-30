@@ -25,6 +25,12 @@ if cast and cast.interruptible then
 end
 ```
 
+`spellID` is the active spell ID and `remains` is measured in seconds. For a
+normal cast, `percent` rises from 0 to 100. For a channel, it preserves the
+framework's remaining-progress convention and falls from 100 to 0. The record
+is captured from one secret-safe player cast snapshot, so its fields describe
+the same API sample.
+
 `warden.StopCasting()` returns a success value and a reason:
 
 ```lua
@@ -73,6 +79,18 @@ if spells.Meteor:castgroundat("target") then
 end
 ```
 
+`castgroundat(unit)` and `castandclickraw(x, y, z)` both start the spell and
+place its ground cursor. When another system has already opened the placement
+cursor, use the placement-only forms instead:
+
+```lua
+spell:placegroundat(mouseoverUnit)
+spell:placegroundraw(x, y, z)
+```
+
+These placement-only helpers never cast the spell a second time. They return
+`false` when no ground cursor is active or when WGG rejects the world click.
+
 For clustered placement, `smartaoeposition` finds the best position using the active enemies and group units. `smartaoe` casts at that position:
 
 ```lua
@@ -92,3 +110,14 @@ end
 ```
 
 Use `ignoreEnemies` or `ignoreFriends` when the spell should only consider one side, and `minHits` to require a cluster size. A position result contains `x`, `y`, `z`, and `hitCount`.
+
+Ground-targeting entry points return `false` or `nil` instead of propagating an
+internal provider error. To confirm the loaded implementation and inspect the
+last protected error for a spell:
+
+```lua
+local status = warden.SpellHandler:GetGroundTargetingStatus(spells.Meteor)
+print(status.revision, status.phase, status.targetingActive, status.pendingCode,
+  status.clickAttempted, status.clickAccepted,
+  status.lastError or status.lastFailure or "no ground-target failure")
+```

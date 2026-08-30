@@ -23,6 +23,12 @@ mode choices without overwriting another setup.
 | `Friends` / `Enemies` | The best eight-yard friendly or hostile cluster for area effects. |
 | `Cursor` | Blizzard's normal ground-placement cursor. |
 
+For ground-targeted spells, `Mouseover` means the live **unit** under the mouse:
+Spell Deck opens the spell once and places it at that unit's world position.
+It does not mean an arbitrary terrain point. Use `Cursor` for arbitrary terrain;
+that mode leaves Blizzard's placement cursor open for your manual click because
+WGG does not expose screen-to-world cursor conversion.
+
 ## How queued actions work
 
 Target modes directly select a unit for spell actions. Macros and other action-bar items still run from their original slot, so the macro's own target conditions remain in control.
