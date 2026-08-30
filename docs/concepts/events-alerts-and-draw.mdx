@@ -21,6 +21,35 @@ enemy count.
 If Insight itself disappears outside combat, turn off **Show only in combat**
 in **Settings > Modules > Insight**.
 
+### Rotation integration
+
+Insight does not infer every panel from a spell callback:
+
+- **Now** is automatic. A successful `spell:execute()` that submits a cast
+  request is observed by the framework and shown as the selected action.
+- **Plan** is explicit. A rotation registers its cooldown rows with
+  `warden.Insight:RegisterProfile(namespace, { cooldowns = { ... } })`.
+  Without that profile, Insight correctly displays **No cooldown profile**.
+- **React** is explicit. When a rotation finds a meaningful interrupt, dispel,
+  soothe, taunt, or other reactive target, it publishes a short-lived entry
+  with `warden.Insight:Publish(channel, payload)`. Do not publish a placeholder
+  when no valid target exists.
+
+```lua
+warden.Insight:RegisterProfile("MyRoutine", {
+  cooldowns = {
+    { spell = spells.major_cooldown, enabled = function() return cooldownsOn end },
+  },
+})
+
+warden.Insight:Publish("interrupt", {
+  spell = spells.kick,
+  target = interruptTarget,
+  reason = "Dangerous cast",
+  ttl = 1.25,
+})
+```
+
 Use alerts for visible, short-lived player feedback:
 
 ```lua
