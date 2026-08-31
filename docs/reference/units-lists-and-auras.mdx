@@ -93,6 +93,12 @@ An enemy is active only when Warden has engagement evidence: combat state, a
 player/group target, positive threat, or DPS-dummy status. Unengaged nearby
 packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
 
+Each hostile is represented once. When WGG supplies an opaque raw-object GUID
+and a nameplate supplies the native GUID for that same NPC, Warden keeps the
+native nameplate identity and suppresses the raw duplicate. This applies to
+enemy callbacks, AOE/range counts, and caster lists. OM debug diagnostics show
+the per-refresh `aliases` and `suppressed` counts when this recovery occurs.
+
 ## Active defensives
 
 `unit.defensive` reports whether the unit has a recognized player-class

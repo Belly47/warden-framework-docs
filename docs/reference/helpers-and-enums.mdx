@@ -59,8 +59,10 @@ end
 local maxTTD, averageTTD, enemies = warden.TTD.GroupTTD()
 ```
 
-TTD depends on `warden.activeenemies`; it cannot estimate units that have not
-been discovered or that are outside the 40-yard sampling range.
+TTD samples deduplicated `warden.activeenemies` and also the current valid
+hostile target within 40 yards. That target fallback prevents a transient
+Object Manager classification gap from leaving `target.ttd` at `8888` forever;
+it still needs three health samples before becoming a numeric estimate.
 
 ## Incoming damage and defensive coverage
 

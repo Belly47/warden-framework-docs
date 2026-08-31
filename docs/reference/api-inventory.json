@@ -19,6 +19,7 @@
   {"symbol":"Spell:chargesfractional","source":"SpellHandler/SpellHandler.lua","signature":"()","page":"reference/spells","status":"stable"},
   {"symbol":"warden.SpellHandler.GetPointsInTalent","source":"SpellHandler/SpellHandler.lua","signature":"(talentName)","page":"reference/spells","status":"stable"},
   {"symbol":"warden.UnitManager:Get","source":"UnitManager/UnitManager.lua","signature":"(token)","page":"reference/units-lists-and-auras","status":"stable"},
+  {"symbol":"warden.ObjectManager.diagnostics","source":"ObjectManager/ObjectManager.lua","signature":"per-refresh classification and identity-alias counts","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"warden.UnitManager:RegisterVirtualUnit","source":"UnitManager/UnitManager.lua","signature":"(name, handler)","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit:timeto","source":"UnitClass/UnitClass.lua","signature":"(powerType, amount) -> seconds","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit:runestimeto","source":"UnitClass/UnitClass.lua","signature":"(count) -> seconds","page":"reference/units-lists-and-auras","status":"stable"},
