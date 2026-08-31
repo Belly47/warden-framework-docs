@@ -34,7 +34,11 @@ spell:maxcharges()
 spell:chargesfractional()
 ```
 
-Use `castable` before `cast` when your callback has nontrivial conditions. All values are current-tick state; do not cache them across ticks.
+`cast()` always runs `castable()` first. A `true` return means Warden submitted
+the request successfully; use cast history or combat-log state when a rotation
+must confirm the client later completed it. Use `castable` separately only when
+you need its result for other branching. All values are current-tick state; do
+not cache them across ticks.
 
 ## Live spell state and replacements
 
@@ -61,6 +65,11 @@ full state record is not needed.
 - `overlayed`: whether Blizzard is currently showing a spell-activation/proc glow.
 
 Warden uses this same effective state for known checks, usability, cooldowns, charges, range, casts, cast history, and Insight. Blizzard's runtime replacement API is authoritative; Warden uses a verified legacy fallback only where a client does not report the replacement.
+
+An active replacement need not be a separately learned spellbook entry. Warden
+uses Blizzard's override-aware known check for both the effective and base IDs,
+so a rotation should keep casting the base object—for example,
+`spells.judgment:cast(target)` when it currently resolves to Hammer of Wrath.
 
 `Spell:overlayed()` is intentionally narrower than `state().replaced`: it means the spell is glowing because of an activation/proc, not that the game changed it into another ability. Abilities granted independently by a talent remain separate spell objects unless Blizzard reports an actual replacement.
 
