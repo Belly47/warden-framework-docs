@@ -13,6 +13,10 @@ description: "Stable Warden helpers for common rotation work."
 | `warden.TTD.TimeToPct(unit, percent)` | Get estimated seconds until a unit reaches a health percentage. |
 | `warden.TTD.FightRemains()` | Get the longest relevant active-enemy TTD. |
 | `warden.TTD.GroupTTD()` | Get `maxTTD, averageTTD, count` for valid active enemies. |
+| `warden.GetDamageType(spellID)` | Get curated or observed incoming-damage metadata. |
+| `warden.DefensiveCovers(defensive, incoming)` | Check whether a defensive's broad coverage matches known incoming damage. |
+| `warden.Lists.EncounterDamage[spellID]` | Read curated encounter-damage metadata. |
+| `warden.ObservedDamageTypes[spellID]` | Read combat-log-learned damage metadata. |
 | `warden.grouphp(distance)` | Read group-health information within a range. |
 | `warden.grouphpcount(distance, percent)` | Count group members at or above a health threshold. |
 | `warden.random(min, max)` | Get a random integer in the given range. |
@@ -57,6 +61,36 @@ local maxTTD, averageTTD, enemies = warden.TTD.GroupTTD()
 
 TTD depends on `warden.activeenemies`; it cannot estimate units that have not
 been discovered or that are outside the 40-yard sampling range.
+
+## Incoming damage and defensive coverage
+
+`warden.Lists.DefensiveInfo[spellID]` includes both a defensive `category`
+and a `coverage` profile: `all`, `physical`, `magic`, or `none`.
+`unit.defensivecoverage` exposes the profile of a recognized active defensive.
+
+`warden.GetDamageType(spellID)` returns metadata with `type` (`physical`,
+`magic`, `mixed`, or `unknown`), an optional magical `school`, and optional
+`tankBuster` / `partyDamage` labels. Curated
+`warden.Lists.EncounterDamage` entries win before
+`warden.ObservedDamageTypes`, which learns spell schools from combat-log damage
+to the player. Unknown spells stay `unknown`.
+
+```lua
+local incoming = warden.GetDamageType(388863)
+if incoming.tankBuster and warden.DefensiveCovers(48707, incoming.type) then
+  -- Anti-Magic Shell is a suitable broad magic counter.
+end
+
+if player.defensivecoverage == "physical" then
+  -- A physical-only defense such as Blessing of Protection is currently up.
+end
+```
+
+Coverage is deliberately broad, not a guarantee that a particular mechanic is
+negated: encounter rules, AoE-only effects, absorbs, immunities, and
+reflectable spells still need ability-specific handling. `DefensiveCovers`
+returns `false` for unknown incoming damage so rotations never infer a
+school-specific counter from a name or visual effect.
 
 For compatibility, `player.aura(stanceSpellID)` also recognizes an active
 stance/form when the client exposes it only through the stance bar. New code is

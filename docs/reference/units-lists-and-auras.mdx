@@ -98,7 +98,8 @@ packs remain in `enemies` and `enemiesaround` but not `activeenemies`.
 `unit.defensive` reports whether the unit has a recognized player-class
 defensive aura. `unit.defensiveaura` returns that aura, and
 `unit.defensivecategory` returns one of `reduction`, `absorb`, `immunity`, or
-`majorHealing`.
+`majorHealing`. `unit.defensivecoverage` returns `all`, `physical`, `magic`,
+or `none`.
 
 ```lua
 if player.defensive then
