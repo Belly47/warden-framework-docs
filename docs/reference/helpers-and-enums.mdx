@@ -8,7 +8,11 @@ description: "Stable Warden helpers for common rotation work."
 | `warden.alert(input, iconID, payload)` | Show an in-game alert. |
 | `warden.texture(idOrPath, size)` | Produce formatted spell/texture text for UI labels. |
 | `warden.gcd()` | Get the current global cooldown value. |
-| `warden.groupttd()` | Get the average valid enemy time-to-die value. |
+| `warden.groupttd()` | Get average valid nearby-enemy time-to-die, in seconds. |
+| `warden.TTD.GetTTD(unit)` | Get an individual unit's estimated remaining lifetime, in seconds. |
+| `warden.TTD.TimeToPct(unit, percent)` | Get estimated seconds until a unit reaches a health percentage. |
+| `warden.TTD.FightRemains()` | Get the longest relevant active-enemy TTD. |
+| `warden.TTD.GroupTTD()` | Get `maxTTD, averageTTD, count` for valid active enemies. |
 | `warden.grouphp(distance)` | Read group-health information within a range. |
 | `warden.grouphpcount(distance, percent)` | Count group members at or above a health threshold. |
 | `warden.random(min, max)` | Get a random integer in the given range. |
@@ -26,6 +30,33 @@ description: "Stable Warden helpers for common rotation work."
 | `warden.NumberValue(value, fallback?)` | Normalize a possibly secret numeric value. |
 
 `warden.Enums` and `warden.Lists` provide framework-maintained reference data. Treat enum tables as read-only. The exact available categories are versioned with the framework and should be feature-checked before use.
+
+## Time to die
+
+TTD is an estimate in **seconds**, learned from observed health loss rather
+than a fixed NPC value. While in combat, Warden samples active enemies within
+40 yards about every 0.20 seconds, recording a point when health changes by at
+least 0.5%. It retains up to 10 seconds and 100 samples per unit. After three
+samples, the estimate is the observed time per health-percent lost, multiplied
+by current health percent.
+
+`warden.groupttd()` averages only valid estimates under 6000 seconds. It
+returns `0` until at least one nearby active enemy has enough history. A dummy
+returns `999`; `GetTTD(unit)` returns `8888` when the unit has no TTD record
+and `7777` while it has insufficient samples. Treat those values as unknown,
+not literal durations.
+
+```lua
+local ttd = warden.TTD.GetTTD(target)
+if ttd < 15 then
+  -- The target is estimated to die within 15 seconds.
+end
+
+local maxTTD, averageTTD, enemies = warden.TTD.GroupTTD()
+```
+
+TTD depends on `warden.activeenemies`; it cannot estimate units that have not
+been discovered or that are outside the 40-yard sampling range.
 
 For compatibility, `player.aura(stanceSpellID)` also recognizes an active
 stance/form when the client exposes it only through the stance bar. New code is
