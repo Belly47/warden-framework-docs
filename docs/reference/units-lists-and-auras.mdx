@@ -99,6 +99,29 @@ native nameplate identity and suppresses the raw duplicate. This applies to
 enemy callbacks, AOE/range counts, and caster lists. OM debug diagnostics show
 the per-refresh `aliases` and `suppressed` counts when this recovery occurs.
 
+### Prioritize active casts and channels
+
+`unit.castprogress` reports elapsed progress from 0 to 100 for either a cast or
+channel and returns `0` while idle. The legacy `castingpct` and
+`channelingpct` properties retain their existing conventions.
+
+Clone framework-owned lists before sorting them:
+
+```lua
+local casters = warden.castingenemies:clone():sort(function(left, right)
+  return left.castprogress > right.castprogress
+end)
+
+casters:each(function(unit)
+  if spells.Rebuke:cast(unit) then return true end
+  if spells.AvengersShield:cast(unit) then return true end
+  if spells.HammerOfJustice:cast(unit) then return true end
+  if spells.BlindingLight:cast(unit) then return true end
+end)
+```
+
+The same pattern can select independent targets for splash damage and debuffs.
+
 ## Active defensives
 
 `unit.defensive` reports whether the unit has a recognized player-class

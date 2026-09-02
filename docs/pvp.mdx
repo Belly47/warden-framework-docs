@@ -67,11 +67,13 @@ The core keeps the PvP spell lists in one place so individual packages do not ne
 | `warden.pvp_cc_incap` | Incapacitate effects used by the DR tracker. |
 | `warden.pvp_cc_disorient` | Disorient effects used by the DR tracker. |
 | `warden.pvp_cc_stun` | Stuns used by the DR tracker. |
+| `warden.pvp_cc_breakable` | Hard control normally removed by damage. |
 | `warden.pvp_cc_immunities` | Full CC-immunity auras. |
 | `warden.pvp_cc_immune_magic` | Auras that prevent magical CC. |
 | `warden.pvp_cc_immune_physical` | Auras that prevent physical CC. |
 | `warden.pvp_incoming_cc_spells` | Cast IDs used to recognize incoming CC. |
 | `warden.pvp_burst_auras` | Offensive cooldown auras used for burst detection. |
+| `warden.pvp_damage_immunities` | Auras that fully prevent a damage window. |
 | `warden.pvp_dispel_auras` | PvP dispellable CC and control effects. |
 
 Use the helper functions for decisions rather than checking every ID yourself.
@@ -108,10 +110,67 @@ local multiplier = warden.GetDrMultiplier(enemy, "stun")
 
 Unit wrappers also expose `cc`, `immune`, `immunemagic`, and `immunephysical`. These properties work on normal units, arena units, and virtual units such as `EnemyHealer`.
 
+For duration and AOE safety, use the detailed control state:
+
+```lua
+local active = warden.GetActiveCc(enemy)
+if active and active.breakable then
+  -- Do not hit this unit with incidental damage.
+end
+```
+
+The result contains `aura`, `spellID`, `name`, `category`, `remains`,
+`breakable`, `drStage`, and `drMultiplier`. The boolean form is
+`warden.HasBreakableCc(enemy)`. Unit properties are `activecc` and
+`breakablecc`.
+
 The stable DR categories are exactly `incap`, `disorient`, and `stun`. The
-helpers are only as broad as the tracked aura and DR lists shown above. General
-damage immunity, every soft-control effect, and encounter-specific effect
-immunity are not implied by `immune` or its compatibility aliases.
+helpers are only as broad as the tracked aura and DR lists shown above.
+
+## Avoid damage immunities
+
+`warden.IsDamageImmune(unit, damageType?)` checks full PvP avoidance and the
+coverage of active defensive immunities. Pass `physical`, `magic`, or `mixed`.
+Mixed damage is blocked only by full immunity.
+
+```lua
+if target.exists and not warden.IsDamageImmune(target, "mixed") then
+  spells.Burst:cast(target)
+end
+```
+
+`unit.offensiveimmune` is the mixed-damage property form. The older
+`unit.damageimmune` property keeps its historical CC-immunity meaning for
+compatibility; new damage rotations should use the new API.
+
+## Build one coordinated PvP snapshot
+
+Use `warden.PvpTargeting.GetCombatContext(target)` instead of rescanning the
+group and enemy lists from every spell callback. The result is shared for
+100ms and includes:
+
+- `enemyHealer`, `healerCc`, and `healerControlled` for offensive setup;
+- `friendlyHealer`, `friendlyHealerCc`, and `friendlyHealerControlled` for
+  defensive pressure;
+- `friendlyBurst`, including `level` and `sameTarget`;
+- `enemyBurst`, including its unit, target, level, and damage type;
+- `playerAttackers`, `pressuredFriend`, and `pressuredFriendAttackers`.
+
+```lua
+local context = warden.PvpTargeting.GetCombatContext(target)
+
+if context.healerCc and context.healerCc.remains >= 3 then
+  -- The healer is controlled long enough for a major setup.
+end
+
+if context.friendlyBurst.level >= 3 and context.friendlyBurst.sameTarget then
+  -- Synchronize major cooldowns with this teammate.
+end
+```
+
+Burst levels are `3` for major cooldowns, `2` for minor burst, and `1` for
+supplemental pressure. Identity is GUID-deduplicated, and an unknown teammate
+target never becomes a same-target match.
 
 ## React to enemy burst
 

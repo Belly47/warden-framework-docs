@@ -10,10 +10,14 @@ The regular [spell reference](/reference/spells) covers the common path. These h
 ```lua
 local gcd = spell:currentgcd()
 local queueWindow = spell:queuewindow()
-local latencyMs = spell:latency()
+local latencyMs = warden.Network.GetLatency()
 local castTime = spell:getcasttime()
 local channelTime = spell:getchanneltime()
 ```
+
+`warden.Network.GetLatency()` returns world latency in milliseconds and falls
+back to home latency when world latency is unavailable. `spell:latency()` is a
+deprecated compatibility alias.
 
 To inspect the player's current cast or channel:
 
@@ -68,6 +72,10 @@ local request = warden.SpellHandler:GetCastRequest(requestID)
 ```
 
 Statuses include `submitted`, `success`, `failed`, `interrupted`, and `rejected`.
+
+Object-backed units are resolved to a verified native token before submission.
+If an object cannot be addressed safely, `spell:cast(unit)` returns `false`,
+records no request, and does not change the player's selected target.
 
 ## Ground-targeted spells
 

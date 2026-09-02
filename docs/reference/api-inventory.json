@@ -4,6 +4,8 @@
   {"symbol":"warden:NotifyRoutinesChanged","source":"Routine/Routine.lua","signature":"()","page":"reference/routines","status":"stable"},
   {"symbol":"warden.SpellHandler.NewSpell","source":"SpellHandler/SpellHandler.lua","signature":"(spellID, payload?)","page":"reference/spells","status":"stable"},
   {"symbol":"warden.SpellHandler.PopulateSpellbook","source":"SpellHandler/SpellHandler.lua","signature":"(spells, class, spec, namespace)","page":"reference/spells","status":"stable"},
+  {"symbol":"warden.Network.GetLatency","source":"Util/Network.lua","signature":"() -> milliseconds?","page":"reference/advanced-spells","status":"stable"},
+  {"symbol":"Spell:latency","source":"SpellHandler/SpellHandler.lua","signature":"() -> milliseconds?","page":"reference/advanced-spells","status":"deprecated"},
   {"symbol":"Spell:callback","source":"SpellHandler/SpellHandler.lua","signature":"(callbackFunc)","page":"reference/spells","status":"stable"},
   {"symbol":"Spell:execute","source":"SpellHandler/SpellHandler.lua","signature":"(...)","page":"reference/spells","status":"stable"},
   {"symbol":"Spell:castable","source":"SpellHandler/SpellHandler.lua","signature":"(unit)","page":"reference/spells","status":"stable"},
@@ -20,6 +22,7 @@
   {"symbol":"warden.SpellHandler.GetPointsInTalent","source":"SpellHandler/SpellHandler.lua","signature":"(talentName)","page":"reference/spells","status":"stable"},
   {"symbol":"warden.UnitManager:Get","source":"UnitManager/UnitManager.lua","signature":"(token)","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"warden.ObjectManager.diagnostics","source":"ObjectManager/ObjectManager.lua","signature":"per-refresh classification and identity-alias counts","page":"reference/units-lists-and-auras","status":"stable"},
+  {"symbol":"Unit.castprogress","source":"UnitClass/UnitClass.lua","signature":"property -> elapsed percent (0-100)","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"warden.UnitManager:RegisterVirtualUnit","source":"UnitManager/UnitManager.lua","signature":"(name, handler)","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit:timeto","source":"UnitClass/UnitClass.lua","signature":"(powerType, amount) -> seconds","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit:runestimeto","source":"UnitClass/UnitClass.lua","signature":"(count) -> seconds","page":"reference/units-lists-and-auras","status":"stable"},
@@ -75,6 +78,10 @@
   {"symbol":"warden.IsHealImmune","source":"core.lua","signature":"(unit, configKey?)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.IsCcImmune","source":"core.lua","signature":"(unit, category?)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.IsHardCced","source":"core.lua","signature":"(unit)","page":"reference/helpers-and-enums","status":"stable"},
+  {"symbol":"warden.GetActiveCc","source":"core.lua","signature":"(unit) -> metadata?","page":"pvp","status":"stable"},
+  {"symbol":"warden.HasBreakableCc","source":"core.lua","signature":"(unit) -> boolean","page":"pvp","status":"stable"},
+  {"symbol":"warden.IsDamageImmune","source":"core.lua","signature":"(unit, damageType?) -> boolean","page":"pvp","status":"stable"},
+  {"symbol":"warden.PvpTargeting.GetCombatContext","source":"Util/PvpTargeting.lua","signature":"(damageTarget?) -> context","page":"pvp","status":"stable"},
   {"symbol":"warden.GetDrStage","source":"core.lua","signature":"(unit, category)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.GetDrMultiplier","source":"core.lua","signature":"(unit, category)","page":"reference/helpers-and-enums","status":"stable"},
   {"symbol":"warden.CanApplyCc","source":"core.lua","signature":"(unit, category, minMult?)","page":"reference/helpers-and-enums","status":"stable"},
@@ -91,5 +98,8 @@
   {"symbol":"Unit.cc","source":"UnitClass/UnitClass.lua","signature":"property","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit.immune","source":"UnitClass/UnitClass.lua","signature":"property","page":"reference/units-lists-and-auras","status":"stable"},
   {"symbol":"Unit.immunemagic","source":"UnitClass/UnitClass.lua","signature":"property","page":"reference/units-lists-and-auras","status":"stable"},
-  {"symbol":"Unit.immunephysical","source":"UnitClass/UnitClass.lua","signature":"property","page":"reference/units-lists-and-auras","status":"stable"}
+  {"symbol":"Unit.immunephysical","source":"UnitClass/UnitClass.lua","signature":"property","page":"reference/units-lists-and-auras","status":"stable"},
+  {"symbol":"Unit.activecc","source":"UnitClass/UnitClass.lua","signature":"property -> metadata?","page":"pvp","status":"stable"},
+  {"symbol":"Unit.breakablecc","source":"UnitClass/UnitClass.lua","signature":"property -> boolean","page":"pvp","status":"stable"},
+  {"symbol":"Unit.offensiveimmune","source":"UnitClass/UnitClass.lua","signature":"property -> boolean","page":"pvp","status":"stable"}
 ]

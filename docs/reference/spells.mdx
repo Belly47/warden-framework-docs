@@ -40,6 +40,10 @@ must confirm the client later completed it. Use `castable` separately only when
 you need its result for other branching. All values are current-tick state; do
 not cache them across ticks.
 
+Framework units backed by WGG objects are resolved to a verified native unit
+token before submission. If a unit has no verified token, `cast()` returns
+`false`, records no request, and does not change the player's selected target.
+
 ## Live spell state and replacements
 
 ```lua
